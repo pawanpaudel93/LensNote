@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useEffect } from 'react'
 import {
   Box,
   Flex,
@@ -14,12 +14,9 @@ import {
 import NextLink from 'next/link'
 import { HamburgerIcon, CloseIcon, SunIcon, MoonIcon } from '@chakra-ui/icons'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { useAccount, useConnect } from 'wagmi'
-import { useClient } from 'urql'
-import { getDefaultProfileQuery } from '../graphql/queries'
-import { useLogin } from '../hooks/useLogin'
-import { JWT_KEY } from '../constants'
-import { IProfile } from '../interfaces'
+import { useAccount } from 'wagmi'
+import { useLogin } from '@/hooks/useLogin'
+import { JWT_KEY } from '@/constants'
 
 interface NavItem {
   key: number
@@ -137,27 +134,11 @@ const NavLink = ({ children, href }: { children: ReactNode; href: string }) => (
 
 export default function NavBar() {
   const { colorMode, toggleColorMode } = useColorMode()
-  const [profile, setProfile] = useState<IProfile>()
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { isConnected } = useConnect()
-  const { data: account } = useAccount()
+  const { address, isConnected } = useAccount()
   const { login } = useLogin()
-  const client = useClient()
 
-  const getDefaultProfile = async () => {
-    try {
-      const result = await client
-        .query(getDefaultProfileQuery, {
-          request: { ethereumAddress: account?.address },
-        })
-        .toPromise()
-      setProfile(result.data.defaultProfile)
-    } catch (e) {
-      console.error(e)
-    }
-  }
   useEffect(() => {
-    if (account?.address) getDefaultProfile()
     if (isConnected) {
       const jwt = JSON.parse(localStorage.getItem(JWT_KEY) ?? '{}')
       if (!jwt?.accessToken || new Date().getTime() >= jwt.expiry * 1000) {
@@ -165,7 +146,7 @@ export default function NavBar() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isConnected, account?.address])
+  }, [isConnected, address])
 
   return (
     <>
@@ -204,7 +185,7 @@ export default function NavBar() {
                 <Button onClick={toggleColorMode} mr={3}>
                   {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
                 </Button>
-                <ConnectButton label="Sign in" accountStatus="avatar" />
+                <ConnectButton label="Connect Wallet" accountStatus="avatar" />
               </Stack>
             </Flex>
           </Flex>

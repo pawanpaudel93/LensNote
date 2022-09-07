@@ -1,4 +1,4 @@
-import '../styles/globals.css'
+import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
 import { ChakraProvider } from '@chakra-ui/react'
 import '@rainbow-me/rainbowkit/styles.css'
@@ -8,7 +8,7 @@ import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { publicProvider } from 'wagmi/providers/public'
 import jwtDecode, { JwtPayload } from 'jwt-decode'
 import NextNProgress from 'nextjs-progressbar'
-import Header from '../components/Header'
+import Header from '@/components/Header'
 import {
   dedupExchange,
   cacheExchange,
@@ -17,8 +17,8 @@ import {
 } from '@urql/core'
 import { authExchange } from '@urql/exchange-auth'
 import { withUrqlClient } from 'next-urql'
-import { refreshMutation } from '../graphql/mutations'
-import { JWT_KEY } from '../constants'
+import { refreshMutation } from '@/graphql/mutations'
+import { JWT_KEY } from '@/constants'
 
 const { chains, provider } = configureChains(
   [chain.polygonMumbai],

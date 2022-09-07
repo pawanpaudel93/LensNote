@@ -12,8 +12,8 @@ import {
   Tag,
 } from '@chakra-ui/react'
 import { useState } from 'react'
-import { useProfile } from '../../hooks/useProfile'
-import { IProfile } from '../../interfaces'
+import { useProfile } from '@/hooks/useProfile'
+import { IProfile } from '@/interfaces'
 
 export default function MyProfile({ profile }: { profile: IProfile }) {
   const [isLoading, setIsLoading] = useState(false)
@@ -54,6 +54,7 @@ export default function MyProfile({ profile }: { profile: IProfile }) {
         </Flex>
 
         <Box p={6}>
+          {profile.id}
           <Stack spacing={0} align={'center'} mb={5}>
             <Heading fontSize={'2xl'} fontWeight={500} fontFamily={'body'}>
               {profile.handle}

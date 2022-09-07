@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useClient } from 'urql'
 import { useAccount } from 'wagmi'
-import { getProfilesQuery } from '../graphql/queries'
-import MyProfile from '../components/profile/MyProfile'
+import { getProfilesQuery } from '@/graphql/queries'
+import MyProfile from '@/components/profile/MyProfile'
 import { Container, HStack } from '@chakra-ui/react'
-import { IProfile } from '../interfaces'
+import { IProfile } from '@/interfaces'
 
 export default function MyProfiles() {
   const client = useClient()
-  const { data: account } = useAccount()
+  const { address } = useAccount()
   const [profiles, setProfiles] = useState<IProfile[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -18,7 +18,7 @@ export default function MyProfiles() {
       const result = await client
         .query(getProfilesQuery, {
           request: {
-            ownedBy: [account?.address],
+            ownedBy: [address],
             limit: 10,
           },
         })
@@ -31,9 +31,9 @@ export default function MyProfiles() {
   }
 
   useEffect(() => {
-    if (account?.address) getMyProfiles()
+    if (address) getMyProfiles()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account?.address])
+  }, [address])
 
   if (isLoading) {
     return <div>Loading...</div>

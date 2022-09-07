@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/react'
 import { FormEvent, useState } from 'react'
 import { useMutation } from 'urql'
-import { createProfileMutation } from '../graphql/mutations'
+import { createProfileMutation } from '@/graphql/mutations'
 
 export default function CreateProfile() {
   const [handle, setHandle] = useState('')
