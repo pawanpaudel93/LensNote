@@ -21,10 +21,10 @@ import {
   IProfile,
 } from '@/interfaces/'
 import { usePost } from '@/hooks/usePost'
-import { getDefaultProfileQuery } from '@/graphql/queries'
+import { GET_DEFAULT_PROFILE_QUERY } from '@/graphql/queries'
 import { useAccount } from 'wagmi'
 import { useClient } from 'urql'
-import { APP_NAME } from '@/constants'
+import { APP_NAME, WMATIC_TOKEN_ADDRESS } from '@/constants'
 import 'md-editor-rt/lib/style.css'
 
 const CreateNote: NextPage = () => {
@@ -51,12 +51,10 @@ const CreateNote: NextPage = () => {
     animation_url: null,
     attributes: [
       {
-        displayType: null,
         traitType: 'type',
         value: 'note',
       },
       {
-        displayType: null,
         traitType: 'isPrivate',
         value: 'false',
       },
@@ -92,7 +90,6 @@ const CreateNote: NextPage = () => {
         }),
       })
       const responseJSON = await response.json()
-      // const contentURI = 'ipfs://' + responseJSON.contentID
       const contentURI = 'ipfs://' + responseJSON.contentID
       // const contentURI =
       //   'ipfs://bafkreia3tfgsxhb6osxm7b346fpvfgm2afwzbowry4rjxsg4kyefcgxoya'
@@ -100,20 +97,20 @@ const CreateNote: NextPage = () => {
       await createPost({
         profileId: profile?.id,
         contentURI,
-        // collectModule: {
-        //   feeCollectModule: {
-        //     amount: {
-        //       currency: '0xD40282e050723Ae26Aeb0F77022dB14470f4e011',
-        //       value: '0.01',
-        //     },
-        //     recipient: address,
-        //     referralFee: 10.5,
-        //     followerOnly: false,
-        //   },
-        // },
         collectModule: {
-          freeCollectModule: { followerOnly: false },
+          feeCollectModule: {
+            amount: {
+              currency: WMATIC_TOKEN_ADDRESS,
+              value: '0.01',
+            },
+            recipient: address,
+            referralFee: 10.5,
+            followerOnly: false,
+          },
         },
+        // collectModule: {
+        //   freeCollectModule: { followerOnly: false },
+        // },
         referenceModule: {
           followerOnlyReferenceModule: false,
         },
@@ -128,7 +125,7 @@ const CreateNote: NextPage = () => {
   const getDefaultProfile = async () => {
     try {
       const result = await client
-        .query(getDefaultProfileQuery, {
+        .query(GET_DEFAULT_PROFILE_QUERY, {
           request: { ethereumAddress: address },
         })
         .toPromise()

@@ -45,7 +45,7 @@ export default function MyProfile({ profile }: { profile: IProfile }) {
             src={
               profile.picture
                 ? profile.picture
-                : 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&ixid=eyJhcHBfaWQiOjE3Nzg0fQ'
+                : `https://avatars.dicebear.com/api/avataaars/${profile.id}.svg`
             }
             css={{
               border: '2px solid white',
@@ -54,7 +54,6 @@ export default function MyProfile({ profile }: { profile: IProfile }) {
         </Flex>
 
         <Box p={6}>
-          {profile.id}
           <Stack spacing={0} align={'center'} mb={5}>
             <Heading fontSize={'2xl'} fontWeight={500} fontFamily={'body'}>
               {profile.handle}

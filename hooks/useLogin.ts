@@ -2,7 +2,7 @@ import { useAccount, useSignMessage } from 'wagmi'
 import jwtDecode, { JwtPayload } from 'jwt-decode'
 import { useClient } from 'urql'
 import { JWT_KEY } from '@/constants'
-import { getChallengeQuery } from '@/graphql/queries'
+import { GET_CHALLENGE_QUERY } from '@/graphql/queries'
 import { authenticateMutation } from '@/graphql/mutations'
 
 export const useLogin = () => {
@@ -12,7 +12,7 @@ export const useLogin = () => {
 
   const generateChallenge = async () => {
     return await client
-      .query(getChallengeQuery, {
+      .query(GET_CHALLENGE_QUERY, {
         address: address,
       })
       .toPromise()

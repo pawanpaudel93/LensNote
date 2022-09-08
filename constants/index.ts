@@ -2,6 +2,7 @@ export const JWT_KEY = 'LENS_NOTE_JWT'
 export const LENS_HUB_CONTRACT_ADDRESS =
   '0x60Ae865ee4C725cd04353b5AAb364553f56ceF82'
 export const APP_NAME = 'lensnote'
+export const WMATIC_TOKEN_ADDRESS = '0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889'
 export const LENS_HUB_ABI = [
   {
     inputs: [

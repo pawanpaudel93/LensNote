@@ -8,7 +8,7 @@ import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { publicProvider } from 'wagmi/providers/public'
 import jwtDecode, { JwtPayload } from 'jwt-decode'
 import NextNProgress from 'nextjs-progressbar'
-import Header from '@/components/Header'
+import Header from '@/components/Navigation/Header'
 import {
   dedupExchange,
   cacheExchange,
@@ -19,6 +19,7 @@ import { authExchange } from '@urql/exchange-auth'
 import { withUrqlClient } from 'next-urql'
 import { refreshMutation } from '@/graphql/mutations'
 import { JWT_KEY } from '@/constants'
+import { Footer } from '@/components/Navigation/Footer'
 
 const { chains, provider } = configureChains(
   [chain.polygonMumbai],
@@ -43,9 +44,10 @@ function MyApp({ Component, pageProps }: AppProps) {
         <ChakraProvider>
           <Header />
           <NextNProgress />
-          <div style={{ marginTop: '70px' }}>
+          <div style={{ marginTop: '70px', minHeight: 'calc(100vh - 70px)' }}>
             <Component {...pageProps} />
           </div>
+          <Footer />
         </ChakraProvider>
       </RainbowKitProvider>
     </WagmiConfig>

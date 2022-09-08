@@ -6,7 +6,7 @@ import { Box, Container, SkeletonText, VStack } from '@chakra-ui/react'
 import { IPublication } from '@/interfaces'
 import NoteInfo from '@/components/Notes/NoteInfo'
 
-const Home: NextPage = () => {
+const Notes: NextPage = () => {
   const [result] = useQuery({
     query: GET_EXPLORE_PUBLICATIONS_QUERY,
     variables: {
@@ -42,4 +42,4 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export default Notes

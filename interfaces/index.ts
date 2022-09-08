@@ -171,3 +171,9 @@ export interface IMetadata {
    */
   appId?: AppId | undefined | null
 }
+
+export interface IPublication {
+  __typename: 'Post' | 'Comment' | 'Mirror'
+  metadata: IMetadata
+  id: string
+}

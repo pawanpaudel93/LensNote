@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useClient } from 'urql'
 import { useAccount } from 'wagmi'
-import { getProfilesQuery } from '@/graphql/queries'
-import MyProfile from '@/components/profile/MyProfile'
-import { Container, HStack } from '@chakra-ui/react'
+import { GET_PROFILE_QUERY } from '@/graphql/queries'
+import MyProfile from '@/components/Profile/MyProfile'
+import { Button, Center, Container, HStack } from '@chakra-ui/react'
 import { IProfile } from '@/interfaces'
+import NextLink from 'next/link'
 
 export default function MyProfiles() {
   const client = useClient()
@@ -16,7 +17,7 @@ export default function MyProfiles() {
     setIsLoading(true)
     try {
       const result = await client
-        .query(getProfilesQuery, {
+        .query(GET_PROFILE_QUERY, {
           request: {
             ownedBy: [address],
             limit: 10,
@@ -38,7 +39,17 @@ export default function MyProfiles() {
   if (isLoading) {
     return <div>Loading...</div>
   } else if (profiles.length === 0) {
-    return <div>No profiles found</div>
+    return (
+      <Container>
+        <Center>
+          <NextLink passHref href="/create-profile">
+            <Button mt={12} colorScheme="blue">
+              Create Profile
+            </Button>
+          </NextLink>
+        </Center>
+      </Container>
+    )
   }
 
   return (
