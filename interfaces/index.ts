@@ -172,8 +172,8 @@ export interface IMetadata {
   appId?: AppId | undefined | null
 }
 
-export interface IPublication {
-  __typename: 'Post' | 'Comment' | 'Mirror'
+export interface INote {
+  __typename: 'Post'
   metadata: IMetadata
   id: string
 }

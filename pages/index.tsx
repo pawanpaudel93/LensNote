@@ -3,7 +3,7 @@ import { APP_NAME } from '@/constants'
 import { GET_EXPLORE_PUBLICATIONS_QUERY } from '@/graphql/queries'
 import { useQuery } from 'urql'
 import { Box, Container, SkeletonText, VStack } from '@chakra-ui/react'
-import { IPublication } from '@/interfaces'
+import { INote } from '@/interfaces'
 import NoteInfo from '@/components/Notes/NoteInfo'
 
 const Home: NextPage = () => {
@@ -20,8 +20,7 @@ const Home: NextPage = () => {
     },
   })
 
-  const publications: IPublication[] =
-    result.data?.explorePublications?.items ?? []
+  const notes: INote[] = result.data?.explorePublications?.items ?? []
 
   return result.fetching ? (
     <Container maxW="full" px={12}>
@@ -35,8 +34,8 @@ const Home: NextPage = () => {
     </Container>
   ) : (
     <VStack spacing={2}>
-      {publications.map((publication, index) => (
-        <NoteInfo key={index} publication={publication} isDetailPage={false} />
+      {notes.map((note, index) => (
+        <NoteInfo key={index} note={note} isDetailPage={false} />
       ))}
     </VStack>
   )

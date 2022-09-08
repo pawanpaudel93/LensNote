@@ -1,4 +1,3 @@
-import { ReactNode, useEffect } from 'react'
 import {
   Box,
   Flex,
@@ -11,13 +10,14 @@ import {
   Stack,
   useColorMode,
 } from '@chakra-ui/react'
-import NextLink from 'next/link'
+import NextLink, { LinkProps } from 'next/link'
 import { HamburgerIcon, CloseIcon, SunIcon, MoonIcon } from '@chakra-ui/icons'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { useAccount } from 'wagmi'
-import { useLogin } from '@/hooks/useLogin'
-import { JWT_KEY } from '@/constants'
+// import { useAccount } from 'wagmi'
+// import { useLogin } from '@/hooks/useLogin'
+// import { JWT_KEY } from '@/constants'
 import Logo from '@/components/Logo'
+import { useRouter } from 'next/router'
 
 interface NavItem {
   key: number
@@ -25,29 +25,66 @@ interface NavItem {
   href?: string
 }
 
+interface NavLinkProps extends LinkProps {
+  children?: string | React.ReactNode
+  href: string
+}
+
 const NavItems: Array<NavItem> = [
   {
     key: 0,
+    label: 'Notes',
+    href: '/notes',
+  },
+  {
+    key: 1,
     label: 'My Profiles',
     href: '/my-profiles',
   },
 ]
 
-const NavLink = ({ children, href }: { children: ReactNode; href: string }) => (
-  <NextLink href={href} passHref>
-    <Link
-      px={2}
-      py={1}
-      rounded={'md'}
-      _hover={{
-        textDecoration: 'none',
-        bg: useColorModeValue('gray.200', 'gray.700'),
-      }}
-    >
-      {children}
-    </Link>
-  </NextLink>
-)
+const NavLink = ({ href, children }: NavLinkProps) => {
+  const router = useRouter()
+  const isActive = router.pathname === href
+  const color = useColorModeValue('#0E76FD', 'selected')
+
+  if (isActive) {
+    return (
+      <NextLink href={href} passHref>
+        <Link
+          fontWeight="bold"
+          color={color}
+          px={2}
+          py={1}
+          rounded={'md'}
+          _hover={{
+            textDecoration: 'none',
+            bg: useColorModeValue('gray.200', 'gray.700'),
+          }}
+          border="1px solid"
+        >
+          {children}
+        </Link>
+      </NextLink>
+    )
+  }
+
+  return (
+    <NextLink href={href} passHref>
+      <Link
+        px={2}
+        py={1}
+        rounded={'md'}
+        _hover={{
+          textDecoration: 'none',
+          bg: useColorModeValue('gray.200', 'gray.700'),
+        }}
+      >
+        {children}
+      </Link>
+    </NextLink>
+  )
+}
 
 export default function NavBar() {
   const { colorMode, toggleColorMode } = useColorMode()
