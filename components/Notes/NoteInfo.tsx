@@ -10,7 +10,7 @@ export default function NoteInfo({
   note: INote
 }) {
   return (
-    <Stack p="4" boxShadow="lg" m="4" borderRadius="sm">
+    <Stack p="4" boxShadow="lg" m="4" borderRadius="sm" minW="full">
       <Stack direction="row" alignItems="center">
         <Text fontWeight="semibold">{note?.metadata?.name}</Text>
       </Stack>

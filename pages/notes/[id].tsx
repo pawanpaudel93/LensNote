@@ -23,7 +23,7 @@ const Note: NextPage = () => {
   const note: INote = data?.data?.publication
   return (
     <Container maxW="full" px={12}>
-      <SkeletonText noOfLines={5} spacing="4" isLoaded={!data.fetching}>
+      <SkeletonText noOfLines={4} spacing="4" isLoaded={!data.fetching}>
         <NoteInfo note={note} isDetailPage />
         <Box p="4" boxShadow="lg" m="4" borderRadius="sm">
           <MdEditor
@@ -33,6 +33,13 @@ const Note: NextPage = () => {
           />
         </Box>
       </SkeletonText>
+
+      <SkeletonText
+        noOfLines={20}
+        mt={12}
+        spacing="4"
+        isLoaded={!data.fetching}
+      />
     </Container>
   )
 }

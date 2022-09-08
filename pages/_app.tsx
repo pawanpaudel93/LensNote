@@ -6,6 +6,7 @@ import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { chain, configureChains, createClient, WagmiConfig } from 'wagmi'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { publicProvider } from 'wagmi/providers/public'
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import jwtDecode, { JwtPayload } from 'jwt-decode'
 import NextNProgress from 'nextjs-progressbar'
 import Header from '@/components/Navigation/Header'
@@ -23,7 +24,22 @@ import { Footer } from '@/components/Navigation/Footer'
 
 const { chains, provider } = configureChains(
   [chain.polygonMumbai],
-  [alchemyProvider({ alchemyId: process.env.ALCHEMY_ID }), publicProvider()]
+  [
+    jsonRpcProvider({
+      rpc: () => {
+        return {
+          http: process.env.NEXT_PUBLIC_QUICKNODE_RPC_URL as string,
+          webSocket: process.env.NEXT_PUBLIC_QUICKNODE_RPC_WSS_URL as string,
+        }
+      },
+      priority: 0,
+    }),
+    alchemyProvider({
+      apiKey: process.env.NEXT_PUBLIC_ALCHEMY_ID as string,
+      priority: 1,
+    }),
+    publicProvider({ priority: 2 }),
+  ]
 )
 
 const { connectors } = getDefaultWallets({

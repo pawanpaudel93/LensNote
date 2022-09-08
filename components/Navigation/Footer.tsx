@@ -62,7 +62,9 @@ export function Footer() {
         <NextLink href="/" passHref>
           <Box cursor="pointer">
             <Logo />
-            Note
+            <Text style={{ display: 'inline' }} color="green">
+              Note
+            </Text>
           </Box>
         </NextLink>
         <Text>© 2022 LensNote. All rights reserved</Text>

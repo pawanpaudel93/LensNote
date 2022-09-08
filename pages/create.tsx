@@ -11,8 +11,13 @@ import {
   FormLabel,
   Input,
   Switch,
+  Select,
   Textarea,
   VStack,
+  Radio,
+  RadioGroup,
+  Stack,
+  HStack,
 } from '@chakra-ui/react'
 import {
   IMetadata,
@@ -26,6 +31,25 @@ import { useAccount } from 'wagmi'
 import { useClient } from 'urql'
 import { APP_NAME, WMATIC_TOKEN_ADDRESS } from '@/constants'
 import 'md-editor-rt/lib/style.css'
+import { CommonFeeCollectModuleParams } from '@/interfaces/publication'
+
+const collectModuleTypes = {
+  FreeCollectModule: 'Free Collect',
+  RevertCollectModule: 'Revert Collect',
+  FeeCollectModule: 'Fee Collect',
+  LimitedFeeCollectModule: 'Limited Fee Collect',
+  LimitedTimedFeeCollectModule: 'Limited Timed Fee Collect',
+  TimedFeeCollectModule: 'Timed Fee Collect',
+}
+
+export enum CollectModules {
+  FeeCollectModule = 'FeeCollectModule',
+  FreeCollectModule = 'FreeCollectModule',
+  LimitedFeeCollectModule = 'LimitedFeeCollectModule',
+  LimitedTimedFeeCollectModule = 'LimitedTimedFeeCollectModule',
+  RevertCollectModule = 'RevertCollectModule',
+  TimedFeeCollectModule = 'TimedFeeCollectModule',
+}
 
 const CreateNote: NextPage = () => {
   const { createPost } = usePost()
@@ -33,7 +57,20 @@ const CreateNote: NextPage = () => {
   const client = useClient()
   const [isLoading, setIsLoading] = useState(false)
   const [profile, setProfile] = useState<IProfile>()
+  const [collectModule, setCollectModule] = useState('FreeCollectModule')
   const toolbarsExclude: ToolbarNames[] = ['github']
+  const [value, setValue] = useState('false')
+  const [followerOnlyReference, setFollowerOnlyReference] = useState('false')
+  const [collect, setCollect] = useState<CommonFeeCollectModuleParams>({
+    collectLimit: '100000',
+    amount: {
+      currency: WMATIC_TOKEN_ADDRESS,
+      value: '1',
+    },
+    recipient: address as string,
+    referralFee: 10,
+    followerOnly: false,
+  })
   const [metadata, setMetadata] = useState<IMetadata>({
     version: PublicationMetadataVersions.two,
     metadata_id: uuidv4(),
@@ -94,25 +131,42 @@ const CreateNote: NextPage = () => {
       // const contentURI =
       //   'ipfs://bafkreia3tfgsxhb6osxm7b346fpvfgm2afwzbowry4rjxsg4kyefcgxoya'
       console.log(contentURI)
+      let collectModuleParams = {}
+      if (CollectModules.FreeCollectModule === collectModule) {
+        collectModuleParams = {
+          freeCollectModule: {
+            followerOnly: value === 'true',
+          },
+        }
+      } else if (CollectModules.RevertCollectModule === collectModule) {
+        collectModuleParams = {
+          revertCollectModule: value === 'true',
+        }
+      } else if (
+        collectModule === CollectModules.FeeCollectModule ||
+        collectModule === CollectModules.TimedFeeCollectModule
+      ) {
+        collectModuleParams = {
+          [collectModule.charAt(0).toLowerCase() + collectModule.slice(1)]: {
+            amount: collect.amount,
+            recipient: collect.recipient,
+            referralFee: collect.referralFee,
+            followerOnly: collect.followerOnly,
+          },
+        }
+      } else {
+        collectModuleParams = {
+          [collectModule.charAt(0).toLowerCase() + collectModule.slice(1)]:
+            collect,
+        }
+      }
+
       await createPost({
         profileId: profile?.id,
         contentURI,
-        collectModule: {
-          feeCollectModule: {
-            amount: {
-              currency: WMATIC_TOKEN_ADDRESS,
-              value: '0.01',
-            },
-            recipient: address,
-            referralFee: 10.5,
-            followerOnly: false,
-          },
-        },
-        // collectModule: {
-        //   freeCollectModule: { followerOnly: false },
-        // },
+        collectModule: collectModuleParams,
         referenceModule: {
-          followerOnlyReferenceModule: false,
+          followerOnlyReferenceModule: followerOnlyReference === 'true',
         },
       })
     } catch (e) {
@@ -136,8 +190,177 @@ const CreateNote: NextPage = () => {
   }
 
   useEffect(() => {
-    if (address) getDefaultProfile()
+    if (address) {
+      getDefaultProfile()
+      collect.recipient = address
+    }
   }, [address])
+
+  const CollectModuleComponent = () => {
+    if (collectModule === CollectModules.FreeCollectModule) {
+      return (
+        <FormControl isRequired>
+          <HStack>
+            <FormLabel>Who can collect this Note ?</FormLabel>
+            <RadioGroup onChange={setValue} value={value}>
+              <Stack direction="row">
+                <Radio value="false">All</Radio>
+                <Radio value="true">Follower Only</Radio>
+              </Stack>
+            </RadioGroup>
+          </HStack>
+        </FormControl>
+      )
+    } else if (collectModule === CollectModules.RevertCollectModule) {
+      return (
+        <FormControl isRequired>
+          <HStack>
+            <FormLabel>Donot allow anyone to collect this Note ?</FormLabel>
+            <RadioGroup onChange={setValue} value={value}>
+              <Stack direction="row">
+                <Radio value="true">True</Radio>
+                <Radio value="false">False</Radio>
+              </Stack>
+            </RadioGroup>
+          </HStack>
+        </FormControl>
+      )
+    } else if (
+      collectModule === CollectModules.FeeCollectModule ||
+      collectModule === CollectModules.TimedFeeCollectModule
+    ) {
+      return (
+        <VStack spacing={2} w="full">
+          <FormControl isRequired>
+            <FormLabel>Amount</FormLabel>
+            <Input
+              placeholder="Amount"
+              type="number"
+              value={collect.amount.value}
+              onChange={(e) => {
+                const amount = { ...collect.amount, value: e.target.value ?? 0 }
+                setCollect((prev) => ({ ...prev, amount }))
+              }}
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel>Recipient Address</FormLabel>
+            <Input
+              placeholder="Recipient Address"
+              value={collect.recipient}
+              onChange={(e) =>
+                setCollect((prev) => ({ ...prev, recipient: e.target.value }))
+              }
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel>Referral Fee</FormLabel>
+            <Input
+              placeholder="Referral Fee"
+              value={collect.referralFee}
+              onChange={(e) =>
+                setCollect((prev) => ({
+                  ...prev,
+                  referralFee: parseFloat(e.target.value ?? 0),
+                }))
+              }
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <HStack>
+              <FormLabel>Only Follower can collect ?</FormLabel>
+              <RadioGroup
+                onChange={(value) =>
+                  setCollect((prev) => ({
+                    ...prev,
+                    followerOnly: value === 'true',
+                  }))
+                }
+                value={value}
+              >
+                <Stack direction="row">
+                  <Radio value="true">True</Radio>
+                  <Radio value="false">False</Radio>
+                </Stack>
+              </RadioGroup>
+            </HStack>
+          </FormControl>
+        </VStack>
+      )
+    }
+    return (
+      <VStack spacing={2} w="full">
+        <FormControl isRequired>
+          <FormLabel>Collect Limit</FormLabel>
+          <Input
+            placeholder="Collect Limit"
+            type="number"
+            value={collect.collectLimit}
+            onChange={(e) =>
+              setCollect((prev) => ({
+                ...prev,
+                collectLimit: e.target.value,
+              }))
+            }
+          />
+        </FormControl>
+        <FormControl isRequired>
+          <FormLabel>Amount</FormLabel>
+          <Input
+            placeholder="Amount"
+            type="number"
+            value={collect.amount.value}
+            onChange={(e) => {
+              const amount = { ...collect.amount, value: e.target.value ?? 0 }
+              setCollect((prev) => ({ ...prev, amount }))
+            }}
+          />
+        </FormControl>
+        <FormControl isRequired>
+          <FormLabel>Recipient Address</FormLabel>
+          <Input
+            placeholder="Recipient Address"
+            value={collect.recipient}
+            onChange={(e) =>
+              setCollect((prev) => ({ ...prev, recipient: e.target.value }))
+            }
+          />
+        </FormControl>
+        <FormControl isRequired>
+          <FormLabel>Referral Fee</FormLabel>
+          <Input
+            placeholder="Referral Fee"
+            value={collect.referralFee}
+            onChange={(e) =>
+              setCollect((prev) => ({
+                ...prev,
+                referralFee: parseFloat(e.target.value ?? 0),
+              }))
+            }
+          />
+        </FormControl>
+        <FormControl isRequired>
+          <HStack>
+            <FormLabel>Only Follower can collect ?</FormLabel>
+            <RadioGroup
+              onChange={(value) =>
+                setCollect((prev) => ({
+                  ...prev,
+                  followerOnly: value === 'true',
+                }))
+              }
+              value={value}
+            >
+              <Stack direction="row">
+                <Radio value="true">True</Radio>
+                <Radio value="false">False</Radio>
+              </Stack>
+            </RadioGroup>
+          </HStack>
+        </FormControl>
+      </VStack>
+    )
+  }
 
   return (
     <Container maxW="full" px={12}>
@@ -200,6 +423,37 @@ const CreateNote: NextPage = () => {
                 }))
               }}
             />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel>Select Module for Collect</FormLabel>
+            <Select
+              placeholder="Select Collect Module"
+              value={collectModule}
+              onChange={(e) => setCollectModule(e.target.value)}
+            >
+              {Object.entries(collectModuleTypes).map(([key, value]) => (
+                <option value={key} key={key}>
+                  {value}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+          <CollectModuleComponent />
+          <FormControl isRequired>
+            <HStack>
+              <FormLabel>
+                Allow Follower Only to Comment or Mirror this Note ?
+              </FormLabel>
+              <RadioGroup
+                onChange={setFollowerOnlyReference}
+                value={followerOnlyReference}
+              >
+                <Stack direction="row">
+                  <Radio value="true">True</Radio>
+                  <Radio value="false">False</Radio>
+                </Stack>
+              </RadioGroup>
+            </HStack>
           </FormControl>
           <Center>
             <Button type="submit" colorScheme="blue" isLoading={isLoading}>

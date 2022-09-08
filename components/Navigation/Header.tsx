@@ -9,6 +9,7 @@ import {
   useColorModeValue,
   Stack,
   useColorMode,
+  Text,
 } from '@chakra-ui/react'
 import NextLink, { LinkProps } from 'next/link'
 import { HamburgerIcon, CloseIcon, SunIcon, MoonIcon } from '@chakra-ui/icons'
@@ -38,6 +39,11 @@ const NavItems: Array<NavItem> = [
   },
   {
     key: 1,
+    label: 'Create Note',
+    href: '/create',
+  },
+  {
+    key: 2,
     label: 'My Profiles',
     href: '/my-profiles',
   },
@@ -118,7 +124,9 @@ export default function NavBar() {
               <NextLink href="/" passHref>
                 <Box cursor="pointer">
                   <Logo />
-                  Note
+                  <Text style={{ display: 'inline' }} color="green">
+                    Note
+                  </Text>
                 </Box>
               </NextLink>
 
