@@ -1,6 +1,6 @@
 import type { NextPage } from 'next'
 import { useQuery } from 'urql'
-import { GET_PUBLICATION_QUERY } from '@/graphql/queries'
+import { GET_PUBLICATION_QUERY, GET_ALLOWANCE_QUERY } from '@/graphql/queries'
 import { useRouter } from 'next/router'
 import { INote } from '@/interfaces'
 import NoteInfo from '@/components/Notes/NoteInfo'
@@ -10,6 +10,7 @@ import { Box, Button, Center, Container, SkeletonText } from '@chakra-ui/react'
 import { usePost } from '@/hooks/usePost'
 import { useState } from 'react'
 import NoteStats from '@/components/Notes/NoteStats'
+import { WMATIC_TOKEN_ADDRESS } from '@/constants'
 
 const Note: NextPage = () => {
   const [isCollecting, setIsCollecting] = useState(false)
@@ -25,12 +26,35 @@ const Note: NextPage = () => {
     },
   })
 
+  // const [currencyData] = useQuery({
+  //   query: GET_ALLOWANCE_QUERY,
+  //   variables: {
+  //     request: {
+  //       currencies: [WMATIC_TOKEN_ADDRESS],
+  //       collectModules: [
+  //         'LimitedFeeCollectModule',
+  //         'FeeCollectModule',
+  //         'LimitedTimedFeeCollectModule',
+  //         'TimedFeeCollectModule',
+  //         'FreeCollectModule',
+  //         'RevertCollectModule',
+  //       ],
+  //       followModules: [
+  //         'FeeFollowModule',
+  //         'RevertFollowModule',
+  //         'ProfileFollowModule',
+  //       ],
+  //       referenceModules: ['FollowerOnlyReferenceModule'],
+  //     },
+  //   },
+  // })
+
   const note: INote = data?.data?.publication
 
   const collectNote = async () => {
     try {
       setIsCollecting(true)
-      await collectPost({ publicationId: id })
+      await collectPost({ publicationId: id }, note.collectModule.type)
     } catch (error) {
       console.log(error)
     } finally {

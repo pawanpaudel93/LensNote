@@ -1147,3 +1147,22 @@ fragment CommentMirrorOfFields on Comment {
   }
 }
 `
+export const GET_ALLOWANCE_QUERY = `
+query($request: ApprovedModuleAllowanceAmountRequest!) {
+  approvedModuleAllowanceAmount(request: $request) {
+    currency
+    module
+    contractAddress
+    allowance
+  }
+}`
+
+export const MODULE_APPROVAL_DATA = `
+  query($request: GenerateModuleCurrencyApprovalDataRequest!) {
+    generateModuleCurrencyApprovalData(request: $request) {
+      to
+      from
+      data
+    }
+  }
+`

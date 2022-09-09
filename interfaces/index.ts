@@ -184,4 +184,7 @@ export interface INote {
   profile: {
     handle: string
   }
+  collectModule: {
+    type: string
+  }
 }

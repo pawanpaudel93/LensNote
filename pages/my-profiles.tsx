@@ -3,7 +3,7 @@ import { useClient } from 'urql'
 import { useAccount } from 'wagmi'
 import { GET_PROFILE_QUERY } from '@/graphql/queries'
 import MyProfile from '@/components/Profile/MyProfile'
-import { Button, Center, Container, HStack, Stack } from '@chakra-ui/react'
+import { Button, Center, Container, Stack } from '@chakra-ui/react'
 import { IProfile } from '@/interfaces'
 import NextLink from 'next/link'
 

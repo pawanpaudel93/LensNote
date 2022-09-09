@@ -54,7 +54,7 @@ const NavLink = ({ href, children }: NavLinkProps) => {
   const router = useRouter()
   const isActive = router.pathname === href
   const color = useColorModeValue('#0E76FD', 'selected')
-
+  const bg = useColorModeValue('gray.200', 'gray.700')
   if (isActive) {
     return (
       <NextLink href={href} passHref>
@@ -66,7 +66,7 @@ const NavLink = ({ href, children }: NavLinkProps) => {
           rounded={'md'}
           _hover={{
             textDecoration: 'none',
-            bg: useColorModeValue('gray.200', 'gray.700'),
+            bg,
           }}
           border="1px solid"
         >
@@ -84,7 +84,7 @@ const NavLink = ({ href, children }: NavLinkProps) => {
         rounded={'md'}
         _hover={{
           textDecoration: 'none',
-          bg: useColorModeValue('gray.200', 'gray.700'),
+          bg,
         }}
       >
         {children}

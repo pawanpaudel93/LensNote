@@ -188,6 +188,7 @@ const CreateNote: NextPage = () => {
       getDefaultProfile()
       collect.recipient = address
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address])
 
   const CollectModuleComponent = () => {
