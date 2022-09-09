@@ -33,11 +33,13 @@ const Notes: NextPage = () => {
         ))}
     </Container>
   ) : (
-    <VStack spacing={2}>
-      {notes.map((note, index) => (
-        <NoteInfo key={index} note={note} isDetailPage={false} />
-      ))}
-    </VStack>
+    <Container maxW="full" px={12}>
+      <VStack spacing={2}>
+        {notes.map((note, index) => (
+          <NoteInfo key={index} note={note} isDetailPage={false} />
+        ))}
+      </VStack>
+    </Container>
   )
 }
 

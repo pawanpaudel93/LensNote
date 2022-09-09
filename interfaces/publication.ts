@@ -38,3 +38,12 @@ export interface CollectModuleParams {
   // The collect timed fee collect module
   timedFeeCollectModule: TimedFeeCollectModuleParams
 }
+
+export enum CollectModules {
+  FeeCollectModule = 'FeeCollectModule',
+  FreeCollectModule = 'FreeCollectModule',
+  LimitedFeeCollectModule = 'LimitedFeeCollectModule',
+  LimitedTimedFeeCollectModule = 'LimitedTimedFeeCollectModule',
+  RevertCollectModule = 'RevertCollectModule',
+  TimedFeeCollectModule = 'TimedFeeCollectModule',
+}

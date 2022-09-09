@@ -14,11 +14,12 @@ import {
 import NextLink, { LinkProps } from 'next/link'
 import { HamburgerIcon, CloseIcon, SunIcon, MoonIcon } from '@chakra-ui/icons'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-// import { useAccount } from 'wagmi'
-// import { useLogin } from '@/hooks/useLogin'
-// import { JWT_KEY } from '@/constants'
+import { useAccount } from 'wagmi'
+import { useLogin } from '@/hooks/useLogin'
+import { JWT_KEY } from '@/constants'
 import Logo from '@/components/Logo'
 import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 
 interface NavItem {
   key: number
@@ -95,18 +96,18 @@ const NavLink = ({ href, children }: NavLinkProps) => {
 export default function NavBar() {
   const { colorMode, toggleColorMode } = useColorMode()
   const { isOpen, onOpen, onClose } = useDisclosure()
-  // const { address, isConnected } = useAccount()
-  // const { login } = useLogin()
+  const { address, isConnected } = useAccount()
+  const { login } = useLogin()
 
-  // useEffect(() => {
-  //   if (isConnected) {
-  //     const jwt = JSON.parse(localStorage.getItem(JWT_KEY) ?? '{}')
-  //     if (!jwt?.accessToken || new Date().getTime() >= jwt.expiry * 1000) {
-  //       login()
-  //     }
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [isConnected, address])
+  useEffect(() => {
+    if (isConnected) {
+      const jwt = JSON.parse(localStorage.getItem(JWT_KEY) ?? '{}')
+      if (!jwt?.accessToken) {
+        login()
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected, address])
 
   return (
     <>

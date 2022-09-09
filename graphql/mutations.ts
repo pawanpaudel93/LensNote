@@ -69,7 +69,7 @@ export const createSetDefaultProfileTypedDataMutation = `
   }
 `
 
-export const createPostTypedDataMutation = `
+export const CREATE_POST_TYPED_DATA = `
 mutation($request: CreatePublicPostRequest!) { 
   createPostTypedData(request: $request) {
     id
@@ -100,4 +100,34 @@ mutation($request: CreatePublicPostRequest!) {
   }
  }
 }
+`
+
+export const CREATE_COLLECT_TYPED_DATA = `
+  mutation($request: CreateCollectRequest!) { 
+    createCollectTypedData(request: $request) {
+      id
+      expiresAt
+      typedData {
+        types {
+          CollectWithSig {
+            name
+            type
+          }
+        }
+      domain {
+        name
+        chainId
+        version
+        verifyingContract
+      }
+      value {
+        nonce
+        deadline
+        profileId
+        pubId
+        data
+      }
+     }
+   }
+ }
 `

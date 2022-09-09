@@ -176,4 +176,12 @@ export interface INote {
   __typename: 'Post'
   metadata: IMetadata
   id: string
+  stats: {
+    totalAmountOfMirrors: number
+    totalAmountOfCollects: number
+    totalAmountOfComments: number
+  }
+  profile: {
+    handle: string
+  }
 }

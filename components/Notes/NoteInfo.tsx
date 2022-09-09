@@ -1,5 +1,5 @@
 import { INote } from '@/interfaces'
-import { Stack, Button, Text } from '@chakra-ui/react'
+import { Stack, Button, Text, Tag } from '@chakra-ui/react'
 import NextLink from 'next/link'
 
 export default function NoteInfo({
@@ -32,6 +32,9 @@ export default function NoteInfo({
           </Stack>
         )}
       </Stack>
+      <Text>
+        <b>Note By</b>: <Tag>{note?.profile?.handle}</Tag>
+      </Text>
     </Stack>
   )
 }

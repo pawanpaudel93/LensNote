@@ -31,7 +31,10 @@ import { useAccount } from 'wagmi'
 import { useClient } from 'urql'
 import { APP_NAME, WMATIC_TOKEN_ADDRESS } from '@/constants'
 import 'md-editor-rt/lib/style.css'
-import { CommonFeeCollectModuleParams } from '@/interfaces/publication'
+import {
+  CollectModules,
+  CommonFeeCollectModuleParams,
+} from '@/interfaces/publication'
 
 const collectModuleTypes = {
   FreeCollectModule: 'Free Collect',
@@ -40,15 +43,6 @@ const collectModuleTypes = {
   LimitedFeeCollectModule: 'Limited Fee Collect',
   LimitedTimedFeeCollectModule: 'Limited Timed Fee Collect',
   TimedFeeCollectModule: 'Timed Fee Collect',
-}
-
-export enum CollectModules {
-  FeeCollectModule = 'FeeCollectModule',
-  FreeCollectModule = 'FreeCollectModule',
-  LimitedFeeCollectModule = 'LimitedFeeCollectModule',
-  LimitedTimedFeeCollectModule = 'LimitedTimedFeeCollectModule',
-  RevertCollectModule = 'RevertCollectModule',
-  TimedFeeCollectModule = 'TimedFeeCollectModule',
 }
 
 const CreateNote: NextPage = () => {

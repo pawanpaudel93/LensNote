@@ -3,7 +3,7 @@ import { useClient } from 'urql'
 import { useAccount } from 'wagmi'
 import { GET_PROFILE_QUERY } from '@/graphql/queries'
 import MyProfile from '@/components/Profile/MyProfile'
-import { Button, Center, Container, HStack } from '@chakra-ui/react'
+import { Button, Center, Container, HStack, Stack } from '@chakra-ui/react'
 import { IProfile } from '@/interfaces'
 import NextLink from 'next/link'
 
@@ -53,12 +53,14 @@ export default function MyProfiles() {
   }
 
   return (
-    <Container>
-      <HStack spacing={6}>
-        {profiles.map((profile, index) => (
-          <MyProfile key={index} profile={profile} />
-        ))}
-      </HStack>
+    <Container maxW="full">
+      <Center>
+        <Stack direction={['column', 'row']} spacing={6}>
+          {profiles.map((profile, index) => (
+            <MyProfile key={index} profile={profile} />
+          ))}
+        </Stack>
+      </Center>
     </Container>
   )
 }
