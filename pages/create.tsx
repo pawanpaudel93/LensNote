@@ -24,17 +24,18 @@ import {
   PublicationMetadataVersions,
   PublicationMainFocus,
   IProfile,
+  PublicationMetadataDisplayType,
 } from '@/interfaces/'
 import { usePost } from '@/hooks/usePost'
 import { GET_DEFAULT_PROFILE_QUERY } from '@/graphql/queries'
 import { useAccount } from 'wagmi'
 import { useClient } from 'urql'
 import { APP_NAME, WMATIC_TOKEN_ADDRESS } from '@/constants'
-import 'md-editor-rt/lib/style.css'
 import {
   CollectModules,
   CommonFeeCollectModuleParams,
 } from '@/interfaces/publication'
+import 'md-editor-rt/lib/style.css'
 
 const collectModuleTypes = {
   FreeCollectModule: 'Free Collect',
@@ -54,6 +55,7 @@ const CreateNote: NextPage = () => {
   const [collectModule, setCollectModule] = useState('FreeCollectModule')
   const toolbarsExclude: ToolbarNames[] = ['github']
   const [value, setValue] = useState('false')
+  const [isPrivate, setIsPrivate] = useState('false')
   const [followerOnlyReference, setFollowerOnlyReference] = useState('false')
   const [collect, setCollect] = useState<CommonFeeCollectModuleParams>({
     collectLimit: '100000',
@@ -82,10 +84,12 @@ const CreateNote: NextPage = () => {
     animation_url: null,
     attributes: [
       {
+        displayType: PublicationMetadataDisplayType.string,
         traitType: 'type',
         value: 'note',
       },
       {
+        displayType: PublicationMetadataDisplayType.string,
         traitType: 'isPrivate',
         value: 'false',
       },
@@ -412,6 +416,7 @@ const CreateNote: NextPage = () => {
                 const updatedAttribute = metadata.attributes[1]
                 updatedAttribute.value =
                   updatedAttribute.value === 'true' ? 'false' : 'true'
+                setIsPrivate(updatedAttribute.value)
                 setMetadata((prev: IMetadata) => ({
                   ...prev,
                   attributes: [metadata.attributes[0], updatedAttribute],
