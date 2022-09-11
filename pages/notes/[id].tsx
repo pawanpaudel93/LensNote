@@ -151,7 +151,7 @@ const Note: NextPage = () => {
         <NoteStats stats={note?.stats} />
         <Center>
           <VStack>
-            {note.hasCollectedByMe && (
+            {note?.hasCollectedByMe && (
               <Text color="green">You have already collected this note.</Text>
             )}
             <Button
@@ -159,7 +159,7 @@ const Note: NextPage = () => {
               onClick={collectNote}
               isLoading={isCollecting}
             >
-              {note.hasCollectedByMe ? 'Collect Again' : 'Collect'}
+              {note?.hasCollectedByMe ? 'Collect Again' : 'Collect'}
             </Button>
           </VStack>
         </Center>
