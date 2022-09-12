@@ -13,13 +13,22 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   if (req.method === 'POST') {
-    const { metadata } = req.body
+    const { metadata, encryptedString } = req.body
     try {
-      const files = [
-        new File([JSON.stringify(metadata)], 'metadata.json', {
-          type: 'application/json',
-        }),
-      ]
+      let files = []
+      if (metadata) {
+        files = [
+          new File([JSON.stringify(metadata)], 'metadata.json', {
+            type: 'application/json',
+          }),
+        ]
+      } else {
+        files = [
+          new File([encryptedString], 'encryptedNote.json', {
+            type: 'text/plain',
+          }),
+        ]
+      }
       const client = new Web3Storage({
         token: process.env.WEB3STORAGE_TOKEN as string,
       })
