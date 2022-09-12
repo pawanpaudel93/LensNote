@@ -12,44 +12,27 @@ import {
   Textarea,
   VStack,
 } from '@chakra-ui/react'
-import { IProfile } from '@/interfaces/'
-import { GET_DEFAULT_PROFILE_QUERY } from '@/graphql/queries'
-import { useAccount } from 'wagmi'
-import { useClient } from 'urql'
+import { v4 as uuidv4 } from 'uuid'
 import { connect, Connection } from '@tableland/sdk'
 import ShareModal from 'lit-share-modal-v3'
 import 'md-editor-rt/lib/style.css'
 import lit from '@/lib/lit'
 import { TABLELAND_NOTE_TABLE } from '@/constants'
-
-interface IPrivateMetadata {
-  name: string
-  description: string
-  content: string
-  tags: string[]
-  handle: string
-  contentCid: string
-  encryptedSymmetricKey: string
-  accessControlConditions: object
-  createdAt: number
-  updatedAt: number
-}
+import useAppStore from '@/lib/store'
+import { IPrivateMetadata, IProfile } from '@/interfaces'
 
 let tableland: Connection
 const CreatePrivateNote: NextPage = () => {
-  const { address } = useAccount()
-  const client = useClient()
   const [isLoading, setIsLoading] = useState(false)
-  const [profile, setProfile] = useState<IProfile>()
+  const profile = useAppStore((store) => store.defaultProfile) as IProfile
   const [showShareModal, setShowShareModal] = useState(false)
   const toolbarsExclude: ToolbarNames[] = ['github']
   const unixTime = new Date().getTime()
   const [metadata, setMetadata] = useState<IPrivateMetadata>({
-    name: '',
+    title: '',
     description: '',
     content: '# Note',
     tags: [],
-    handle: '',
     contentCid: '',
     encryptedSymmetricKey: '',
     accessControlConditions: {},
@@ -59,7 +42,10 @@ const CreatePrivateNote: NextPage = () => {
 
   const selectProps = useChakraSelectProps({
     placeholder: 'Tags...',
-    value: metadata.tags?.map((tag) => ({ value: tag, label: tag })),
+    value: (metadata.tags as string[])?.map((tag) => ({
+      value: tag,
+      label: tag,
+    })),
     isMulti: true,
     onChange: (tags) => {
       setMetadata((prev: IPrivateMetadata) => ({
@@ -108,12 +94,13 @@ const CreatePrivateNote: NextPage = () => {
         const responseJSON = await response.json()
         const contentID = responseJSON.contentID
         const writeRes = await tableland.write(
-          `insert into ${TABLELAND_NOTE_TABLE} (title, description, content, contentId, tags, lensId, encryptedSymmetricKey, accessControlConditions, createdAt, updatedAt) values (
-            '${metadata.name}', '${
+          `insert into ${TABLELAND_NOTE_TABLE} (id, title, description, content, contentId, tags, lensId, encryptedSymmetricKey, accessControlConditions, createdAt, updatedAt) values (
+            '${uuidv4()}',
+            '${metadata.title}', '${
             metadata.description
-          }', '', '${contentID}', '${metadata.tags.toString()}', ${
+          }', '', '${contentID}', '${metadata.tags}', ${
             profile?.id
-          }, '${metadata.encryptedSymmetricKey}', '${JSON.stringify(
+          }, '${encryptedSymmetricKey}', '${JSON.stringify(
             metadata.accessControlConditions
           )}', ${metadata.createdAt}, ${metadata.updatedAt}
           )`
@@ -121,12 +108,13 @@ const CreatePrivateNote: NextPage = () => {
         console.log(writeRes)
       } else {
         const writeRes = await tableland.write(
-          `insert into ${TABLELAND_NOTE_TABLE} (title, description, content, contentId, tags, lensId, encryptedSymmetricKey, accessControlConditions, createdAt, updatedAt) values (
-            '${metadata.name}', '${
+          `insert into ${TABLELAND_NOTE_TABLE} (id, title, description, content, contentId, tags, lensId, encryptedSymmetricKey, accessControlConditions, createdAt, updatedAt) values (
+            '${uuidv4()}',
+            '${metadata.title}', '${
             metadata.description
-          }', '${encryptedString}', '', '${metadata.tags.toString()}', '${
+          }', '${encryptedString}', '', '${metadata.tags}', '${
             profile?.id
-          }', '${metadata.encryptedSymmetricKey}', '${JSON.stringify(
+          }', '${encryptedSymmetricKey}', '${JSON.stringify(
             metadata.accessControlConditions
           )}', ${metadata.createdAt}, ${metadata.updatedAt}
           )`
@@ -146,38 +134,12 @@ const CreatePrivateNote: NextPage = () => {
     console.log(metadata)
   }
 
-  const getDefaultProfile = async () => {
-    try {
-      const result = await client
-        .query(GET_DEFAULT_PROFILE_QUERY, {
-          request: { ethereumAddress: address },
-        })
-        .toPromise()
-      setProfile(result.data.defaultProfile)
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
   async function initTableland() {
     tableland = await connect({
       network: 'testnet',
       chain: 'polygon-mumbai',
     })
-    // const token = await tableland.siwe()
-    // console.log(token)
-    const readRes = await tableland.read(
-      `SELECT * FROM ${TABLELAND_NOTE_TABLE};`
-    )
-    console.log(readRes)
   }
-
-  useEffect(() => {
-    if (address) {
-      getDefaultProfile()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address])
 
   useEffect(() => {
     initTableland()
@@ -194,7 +156,7 @@ const CreatePrivateNote: NextPage = () => {
               onChange={(e) => {
                 setMetadata((prev: IPrivateMetadata) => ({
                   ...prev,
-                  name: e.target.value,
+                  title: e.target.value,
                 }))
               }}
             />

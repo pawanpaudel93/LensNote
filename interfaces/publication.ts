@@ -217,3 +217,17 @@ export enum CollectModules {
   RevertCollectModule = 'RevertCollectModule',
   TimedFeeCollectModule = 'TimedFeeCollectModule',
 }
+
+export interface IPrivateMetadata {
+  id?: string
+  lensId?: string
+  title: string
+  description: string
+  content: string
+  tags: string[] | string
+  contentCid: string
+  encryptedSymmetricKey: string
+  accessControlConditions: object
+  createdAt: number
+  updatedAt: number
+}

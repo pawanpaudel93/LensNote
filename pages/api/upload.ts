@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Web3Storage, File } from 'web3.storage'
-import { getErrorMessage } from '@/parser'
+import { getErrorMessage } from '@/lib/parser'
 
 type Data = {
   status: string

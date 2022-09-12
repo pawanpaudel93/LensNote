@@ -97,13 +97,15 @@ export default function NavBar() {
   const { colorMode, toggleColorMode } = useColorMode()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { address, isConnected } = useAccount()
-  const { login } = useLogin()
+  const { login, setMyProfiles } = useLogin()
 
   useEffect(() => {
     if (isConnected) {
       const jwt = JSON.parse(localStorage.getItem(JWT_KEY) ?? '{}')
       if (!jwt?.accessToken) {
         login()
+      } else {
+        setMyProfiles()
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

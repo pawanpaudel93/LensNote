@@ -10,7 +10,6 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Switch,
   Select,
   Textarea,
   VStack,
@@ -23,19 +22,17 @@ import {
   IMetadata,
   PublicationMetadataVersions,
   PublicationMainFocus,
-  IProfile,
   PublicationMetadataDisplayType,
 } from '@/interfaces/'
 import { usePost } from '@/hooks/usePost'
-import { GET_DEFAULT_PROFILE_QUERY } from '@/graphql/queries'
 import { useAccount } from 'wagmi'
-import { useClient } from 'urql'
 import { APP_NAME, WMATIC_TOKEN_ADDRESS } from '@/constants'
 import {
   CollectModules,
   CommonFeeCollectModuleParams,
 } from '@/interfaces/publication'
 import 'md-editor-rt/lib/style.css'
+import useAppStore from '@/lib/store'
 
 const collectModuleTypes = {
   FreeCollectModule: 'Free Collect',
@@ -49,13 +46,11 @@ const collectModuleTypes = {
 const CreateNote: NextPage = () => {
   const { createPost } = usePost()
   const { address } = useAccount()
-  const client = useClient()
   const [isLoading, setIsLoading] = useState(false)
-  const [profile, setProfile] = useState<IProfile>()
+  const profile = useAppStore((store) => store.defaultProfile)
   const [collectModule, setCollectModule] = useState('FreeCollectModule')
   const toolbarsExclude: ToolbarNames[] = ['github']
   const [value, setValue] = useState('false')
-  const [isPrivate, setIsPrivate] = useState('false')
   const [followerOnlyReference, setFollowerOnlyReference] = useState('false')
   const [collect, setCollect] = useState<CommonFeeCollectModuleParams>({
     collectLimit: '100000',
@@ -87,11 +82,6 @@ const CreateNote: NextPage = () => {
         displayType: PublicationMetadataDisplayType.string,
         traitType: 'type',
         value: 'note',
-      },
-      {
-        displayType: PublicationMetadataDisplayType.string,
-        traitType: 'isPrivate',
-        value: 'false',
       },
     ],
     appId: APP_NAME,
@@ -174,22 +164,8 @@ const CreateNote: NextPage = () => {
     }
   }
 
-  const getDefaultProfile = async () => {
-    try {
-      const result = await client
-        .query(GET_DEFAULT_PROFILE_QUERY, {
-          request: { ethereumAddress: address },
-        })
-        .toPromise()
-      setProfile(result.data.defaultProfile)
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
   useEffect(() => {
     if (address) {
-      getDefaultProfile()
       collect.recipient = address
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -405,24 +381,6 @@ const CreateNote: NextPage = () => {
           <FormControl>
             <FormLabel>Tags</FormLabel>
             <CreatableSelect {...selectProps} />
-          </FormControl>
-          <FormControl display="flex" alignItems="center">
-            <FormLabel htmlFor="isPrivate" mb="0">
-              Make Note Private so no one can read it except you ???
-            </FormLabel>
-            <Switch
-              id="isPrivate"
-              onChange={() => {
-                const updatedAttribute = metadata.attributes[1]
-                updatedAttribute.value =
-                  updatedAttribute.value === 'true' ? 'false' : 'true'
-                setIsPrivate(updatedAttribute.value)
-                setMetadata((prev: IMetadata) => ({
-                  ...prev,
-                  attributes: [metadata.attributes[0], updatedAttribute],
-                }))
-              }}
-            />
           </FormControl>
           <FormControl isRequired>
             <FormLabel>Select Module for Collect</FormLabel>

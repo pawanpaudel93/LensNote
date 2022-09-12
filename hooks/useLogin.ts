@@ -2,13 +2,17 @@ import { useAccount, useSignMessage } from 'wagmi'
 import jwtDecode, { JwtPayload } from 'jwt-decode'
 import { useClient } from 'urql'
 import { JWT_KEY } from '@/constants'
-import { GET_CHALLENGE_QUERY } from '@/graphql/queries'
+import { GET_CHALLENGE_QUERY, GET_PROFILE_QUERY } from '@/graphql/queries'
 import { authenticateMutation } from '@/graphql/mutations'
+import useAppStore from '@/lib/store'
+import { IProfile } from '@/interfaces'
 
 export const useLogin = () => {
   const { address } = useAccount()
   const { signMessageAsync } = useSignMessage()
   const client = useClient()
+  const setProfiles = useAppStore((state) => state.setProfiles)
+  const setProfile = useAppStore((state) => state.setProfile)
 
   const generateChallenge = async () => {
     return await client
@@ -25,6 +29,34 @@ export const useLogin = () => {
         signature: signature,
       })
       .toPromise()
+  }
+
+  const setMyProfiles = async () => {
+    try {
+      const result = await client
+        .query(GET_PROFILE_QUERY, {
+          request: {
+            ownedBy: [address],
+          },
+        })
+        .toPromise()
+      const profiles = result.data.profiles.items as IProfile[]
+      setProfiles(profiles)
+      if (profiles.length > 0) {
+        if (profiles.length === 1) {
+          setProfile(profiles[0])
+        } else {
+          const defaultProfile = profiles.find((profile) => profile.isDefault)
+          if (defaultProfile) {
+            setProfile(defaultProfile)
+          } else {
+            setProfile(profiles[0])
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   const login = async () => {
@@ -44,9 +76,11 @@ export const useLogin = () => {
         expiry,
       })
     )
+    await setMyProfiles()
   }
 
   return {
     login,
+    setMyProfiles,
   }
 }
