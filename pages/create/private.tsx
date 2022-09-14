@@ -10,6 +10,7 @@ import {
   FormLabel,
   Input,
   Textarea,
+  useToast,
   VStack,
 } from '@chakra-ui/react'
 import { v4 as uuidv4 } from 'uuid'
@@ -20,10 +21,13 @@ import lit from '@/lib/lit'
 import { TABLELAND_NOTE_TABLE } from '@/constants'
 import useAppStore from '@/lib/store'
 import { IPrivateMetadata, IProfile } from '@/interfaces'
+import { getRPCErrorMessage } from '@/lib/parser'
+import { getDefaultToastOptions } from '@/lib/utils'
 
 let tableland: Connection
 const CreatePrivateNote: NextPage = () => {
   const [isLoading, setIsLoading] = useState(false)
+  const toast = useToast()
   const profile = useAppStore((store) => store.defaultProfile) as IProfile
   const [showShareModal, setShowShareModal] = useState(false)
   const toolbarsExclude: ToolbarNames[] = ['github']
@@ -121,8 +125,17 @@ const CreatePrivateNote: NextPage = () => {
         )
         console.log(writeRes)
       }
-    } catch (e) {
-      console.log(e)
+      toast({
+        title: 'Note created.',
+        description: 'Note has been created sucessfully.',
+        ...getDefaultToastOptions('success'),
+      })
+    } catch (error) {
+      toast({
+        title: 'Note creation error.',
+        description: getRPCErrorMessage(error),
+        ...getDefaultToastOptions('error'),
+      })
     } finally {
       setIsLoading(false)
     }

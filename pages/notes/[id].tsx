@@ -18,6 +18,7 @@ import {
   SkeletonText,
   VStack,
   Text,
+  useToast,
 } from '@chakra-ui/react'
 import { usePost } from '@/hooks/usePost'
 import { useState } from 'react'
@@ -25,12 +26,15 @@ import NoteStats from '@/components/Notes/NoteStats'
 import { WMATIC_TOKEN_ADDRESS, WMATIC_ABI } from '@/constants'
 import { ethers } from 'ethers'
 import { usePrepareSendTransaction, useSendTransaction, useSigner } from 'wagmi'
+import { getDefaultToastOptions } from '@/lib/utils'
+import { getRPCErrorMessage } from '@/lib/parser'
 
 const Note: NextPage = () => {
   const [isCollecting, setIsCollecting] = useState(false)
   const { collectPost } = usePost()
   const { data: signer } = useSigner()
   const client = useClient()
+  const toast = useToast()
 
   const { config: prepareTxn } = usePrepareSendTransaction({
     request: {},
@@ -137,8 +141,17 @@ const Note: NextPage = () => {
         await tx.wait()
       }
       await collectPost({ publicationId: id })
+      toast({
+        title: 'Note collected.',
+        description: 'Note has been collected sucessfully.',
+        ...getDefaultToastOptions('success'),
+      })
     } catch (error) {
-      console.log(error)
+      toast({
+        title: 'Note collection error.',
+        description: getRPCErrorMessage(error),
+        ...getDefaultToastOptions('success'),
+      })
     } finally {
       setIsCollecting(false)
     }

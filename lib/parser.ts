@@ -1,3 +1,5 @@
+import { serializeError } from 'eth-rpc-errors'
+
 type ErrorWithMessage = {
   message: string
 }
@@ -27,4 +29,10 @@ function getErrorMessage(error: unknown) {
   return toErrorWithMessage(error).message
 }
 
-export { getErrorMessage }
+function getRPCErrorMessage(error: unknown) {
+  return serializeError(error, {
+    fallbackError: { code: 4999, message: getErrorMessage(error) },
+  }).message
+}
+
+export { getErrorMessage, getRPCErrorMessage }

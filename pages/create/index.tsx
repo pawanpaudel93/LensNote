@@ -17,6 +17,7 @@ import {
   RadioGroup,
   Stack,
   HStack,
+  useToast,
 } from '@chakra-ui/react'
 import {
   IMetadata,
@@ -33,6 +34,8 @@ import {
 } from '@/interfaces/publication'
 import 'md-editor-rt/lib/style.css'
 import useAppStore from '@/lib/store'
+import { getRPCErrorMessage } from '@/lib/parser'
+import { getDefaultToastOptions } from '@/lib/utils'
 
 const collectModuleTypes = {
   FreeCollectModule: 'Free Collect',
@@ -45,6 +48,7 @@ const collectModuleTypes = {
 
 const CreateNote: NextPage = () => {
   const { createPost } = usePost()
+  const toast = useToast()
   const { address } = useAccount()
   const [isLoading, setIsLoading] = useState(false)
   const profile = useAppStore((store) => store.defaultProfile)
@@ -157,8 +161,17 @@ const CreateNote: NextPage = () => {
           followerOnlyReferenceModule: followerOnlyReference === 'true',
         },
       })
-    } catch (e) {
-      console.log(e)
+      toast({
+        title: 'Note created.',
+        description: 'Note has been created sucessfully.',
+        ...getDefaultToastOptions('success'),
+      })
+    } catch (error) {
+      toast({
+        title: 'Note creation error.',
+        description: getRPCErrorMessage(error),
+        ...getDefaultToastOptions('error'),
+      })
     } finally {
       setIsLoading(false)
     }
