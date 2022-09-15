@@ -20,6 +20,7 @@ export const usePost = () => {
     const result = await createPostTypedData({
       request: createPostRequest,
     })
+    if (result.error) throw result.error
     const typedData = result.data.createPostTypedData.typedData
     const signature = await signedTypeData(
       signTypedDataAsync,
@@ -50,6 +51,7 @@ export const usePost = () => {
     const result = await createCollectTypedData({
       request: collectRequest,
     })
+    if (result.error) throw result.error
     const typedData = result.data.createCollectTypedData.typedData
 
     const signature = await signedTypeData(

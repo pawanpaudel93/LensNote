@@ -32,6 +32,7 @@ const PrivateNotes: NextPage = () => {
     if (profile) {
       initTableland()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile?.id])
 
   return !isLoaded ? (

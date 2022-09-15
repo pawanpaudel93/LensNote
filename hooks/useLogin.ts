@@ -6,11 +6,15 @@ import { GET_CHALLENGE_QUERY, GET_PROFILE_QUERY } from '@/graphql/queries'
 import { authenticateMutation } from '@/graphql/mutations'
 import useAppStore from '@/lib/store'
 import { IProfile } from '@/interfaces'
+import { useToast } from '@chakra-ui/react'
+import { getRPCErrorMessage } from '@/lib/parser'
+import { getDefaultToastOptions } from '@/lib/utils'
 
 export const useLogin = () => {
   const { address } = useAccount()
   const { signMessageAsync } = useSignMessage()
   const client = useClient()
+  const toast = useToast()
   const setProfiles = useAppStore((state) => state.setProfiles)
   const setProfile = useAppStore((state) => state.setProfile)
 
@@ -60,23 +64,32 @@ export const useLogin = () => {
   }
 
   const login = async () => {
-    const challengeResponse = await generateChallenge()
-    const signature = await signMessageAsync({
-      message: challengeResponse.data.challenge.text,
-    })
-    const authData = await authenticate(signature)
-    const { accessToken, refreshToken } = authData.data.authenticate
-    const decoded = jwtDecode<JwtPayload>(accessToken)
-    const expiry = decoded?.exp
-    localStorage.setItem(
-      JWT_KEY,
-      JSON.stringify({
-        accessToken,
-        refreshToken,
-        expiry,
+    try {
+      const challengeResponse = await generateChallenge()
+      const signature = await signMessageAsync({
+        message: challengeResponse.data.challenge.text,
       })
-    )
-    await setMyProfiles()
+      const authData = await authenticate(signature)
+      const { accessToken, refreshToken } = authData.data.authenticate
+      const decoded = jwtDecode<JwtPayload>(accessToken)
+      const expiry = decoded?.exp
+      localStorage.setItem(
+        JWT_KEY,
+        JSON.stringify({
+          accessToken,
+          refreshToken,
+          expiry,
+        })
+      )
+      await setMyProfiles()
+    } catch (error) {
+      console.log(error, getRPCErrorMessage(error))
+      toast({
+        title: 'Authentication error.',
+        description: getRPCErrorMessage(error),
+        ...getDefaultToastOptions('error'),
+      })
+    }
   }
 
   return {

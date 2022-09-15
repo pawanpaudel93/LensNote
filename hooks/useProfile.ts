@@ -22,6 +22,7 @@ export const useProfile = () => {
       const result = await createSetDefaultProfileTypedData(
         setDefaultProfileRequest
       )
+      if (result.error) throw result.error
       const typedData = result.data.createSetDefaultProfileTypedData.typedData
       const signature = await signedTypeData(
         signTypedDataAsync,

@@ -60,6 +60,7 @@ const PrivateNote: NextPage = () => {
     if (id) {
       getPrivateNote()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
   return (

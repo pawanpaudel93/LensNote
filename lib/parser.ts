@@ -30,9 +30,26 @@ function getErrorMessage(error: unknown) {
 }
 
 function getRPCErrorMessage(error: unknown) {
-  return serializeError(error, {
-    fallbackError: { code: 4999, message: getErrorMessage(error) },
-  }).message
+  const errorObject = serializeError(error, {
+    fallbackError: {
+      code: 4999,
+      message: getErrorMessage(error),
+      data: {
+        originalError: {
+          reason: getErrorMessage(error),
+        },
+      },
+    },
+  }) as {
+    data: {
+      originalError: {
+        reason: string
+      }
+    }
+    message: string
+  }
+
+  return errorObject?.data?.originalError?.reason ?? errorObject.message
 }
 
 export { getErrorMessage, getRPCErrorMessage }

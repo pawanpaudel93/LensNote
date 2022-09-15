@@ -16,9 +16,7 @@ const hexStringToArrayBuffer = (hexString: string) => {
     console.log('WARNING: found non-hex characters', bad)
   }
   const pairs = hexString.match(/[\dA-F]{2}/gi)
-  const integers = pairs.map(function (s) {
-    return parseInt(s, 16)
-  })
+  const integers = (pairs ?? []).map((s) => parseInt(s, 16))
   const array = new Uint8Array(integers)
   return array.buffer
 }

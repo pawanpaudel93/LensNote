@@ -42,7 +42,7 @@ const Note: NextPage = () => {
   const { sendTransactionAsync } = useSendTransaction({
     ...prepareTxn,
     mode: 'recklesslyUnprepared',
-    onError(error: any) {
+    onError(error: unknown) {
       console.log(error)
     },
   })
@@ -150,7 +150,7 @@ const Note: NextPage = () => {
       toast({
         title: 'Note collection error.',
         description: getRPCErrorMessage(error),
-        ...getDefaultToastOptions('success'),
+        ...getDefaultToastOptions('error'),
       })
     } finally {
       setIsCollecting(false)
