@@ -10,12 +10,16 @@ import {
   Button,
   useColorModeValue,
   Tag,
+  useToast,
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { useProfile } from '@/hooks/useProfile'
 import { IProfile } from '@/interfaces'
+import { getDefaultToastOptions } from '@/lib/utils'
+import { getRPCErrorMessage } from '@/lib/parser'
 
 export default function MyProfile({ profile }: { profile: IProfile }) {
+  const toast = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const { setDefaultProfile } = useProfile()
   return (
@@ -138,8 +142,21 @@ export default function MyProfile({ profile }: { profile: IProfile }) {
                 boxShadow: 'lg',
               }}
               onClick={async () => {
-                setIsLoading(true)
-                await setDefaultProfile(profile.id)
+                try {
+                  setIsLoading(true)
+                  toast({
+                    title: 'Default profile success.',
+                    description: `Profile handle ${profile.handle} has been set as default profile.`,
+                    ...getDefaultToastOptions('success'),
+                  })
+                  await setDefaultProfile(profile.id)
+                } catch (error) {
+                  toast({
+                    title: 'Default profile selection error.',
+                    description: getRPCErrorMessage(error),
+                    ...getDefaultToastOptions('error'),
+                  })
+                }
                 setIsLoading(false)
               }}
               isLoading={isLoading}

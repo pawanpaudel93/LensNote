@@ -284,6 +284,7 @@ fragment ProfileFields on Profile {
 }
 
 fragment PublicationStatsFields on PublicationStats { 
+  totalUpvotes
   totalAmountOfMirrors
   totalAmountOfCollects
   totalAmountOfComments
@@ -498,7 +499,7 @@ fragment CommentMirrorOfFields on Comment {
 `
 
 export const GET_PUBLICATION_QUERY = `
-query($request: PublicationQueryRequest!) {
+query($request: PublicationQueryRequest!, $reactionRequest: ReactionFieldResolverRequest!) {
   publication(request: $request) {
       __typename 
       ... on Post {
@@ -596,7 +597,8 @@ fragment ProfileFields on Profile {
   }
 }
 
-fragment PublicationStatsFields on PublicationStats { 
+fragment PublicationStatsFields on PublicationStats {
+  totalUpvotes
   totalAmountOfMirrors
   totalAmountOfCollects
   totalAmountOfComments
@@ -707,7 +709,7 @@ fragment PostFields on Post {
   }
   appId
       hidden
-      reaction(request: null)
+      reaction(request: $reactionRequest)
       mirrors(by: null)
   hasCollectedByMe
 }

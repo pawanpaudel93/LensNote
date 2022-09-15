@@ -12,26 +12,31 @@ import MdEditor from 'md-editor-rt'
 import 'md-editor-rt/lib/style.css'
 import {
   Box,
-  Button,
   Center,
   Container,
   SkeletonText,
   VStack,
   Text,
   useToast,
+  HStack,
+  IconButton,
+  Tooltip,
 } from '@chakra-ui/react'
 import { usePost } from '@/hooks/usePost'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import NoteStats from '@/components/Notes/NoteStats'
 import { WMATIC_TOKEN_ADDRESS, WMATIC_ABI } from '@/constants'
 import { ethers } from 'ethers'
 import { usePrepareSendTransaction, useSendTransaction, useSigner } from 'wagmi'
 import { getDefaultToastOptions } from '@/lib/utils'
 import { getRPCErrorMessage } from '@/lib/parser'
+import { BsCollection, BsHeart, BsHeartFill } from 'react-icons/bs'
+import useAppStore from '@/lib/store'
 
 const Note: NextPage = () => {
+  const profile = useAppStore((state) => state.defaultProfile)
   const [isCollecting, setIsCollecting] = useState(false)
-  const { collectPost } = usePost()
+  const { collectPost, reactPost } = usePost()
   const { data: signer } = useSigner()
   const client = useClient()
   const toast = useToast()
@@ -54,6 +59,7 @@ const Note: NextPage = () => {
     query: GET_PUBLICATION_QUERY,
     variables: {
       request: { publicationId: id },
+      reactionRequest: { profileId: profile?.id },
     },
   })
 
@@ -83,6 +89,19 @@ const Note: NextPage = () => {
   const approvedModuleAllowanceAmount: ApprovedAllowanceAmount[] =
     currencyData?.data?.approvedModuleAllowanceAmount ?? []
   const note: INote = data?.data?.publication
+  const [reaction, setReaction] = useState({
+    isLiked: false,
+    likeCount: 0,
+  })
+
+  useEffect(() => {
+    if (data.fetching === false) {
+      setReaction({
+        isLiked: note?.reaction === 'UPVOTE',
+        likeCount: note?.stats?.totalUpvotes,
+      })
+    }
+  }, [data.fetching])
 
   const collectNote = async () => {
     try {
@@ -161,20 +180,104 @@ const Note: NextPage = () => {
     <Container maxW="full" px={12}>
       <SkeletonText noOfLines={4} spacing="4" isLoaded={!data.fetching}>
         <NoteInfo note={note} isDetailPage />
-        <NoteStats stats={note?.stats} />
+        <NoteStats
+          stats={{ ...note?.stats, totalUpvotes: reaction.likeCount }}
+        />
         <Center>
-          <VStack>
-            {note?.hasCollectedByMe && (
-              <Text color="green">You have already collected this note.</Text>
-            )}
-            <Button
-              colorScheme="green"
-              onClick={collectNote}
-              isLoading={isCollecting}
+          <HStack>
+            <Tooltip
+              hasArrow
+              label={reaction.isLiked ? 'Unlike' : 'Like'}
+              placement="top"
+              shouldWrapChildren
+              mt="3"
             >
-              {note?.hasCollectedByMe ? 'Collect Again' : 'Collect'}
-            </Button>
-          </VStack>
+              {reaction.isLiked ? (
+                <IconButton
+                  icon={<BsHeartFill color="red" size="28" />}
+                  aria-label="upvote"
+                  onClick={async () => {
+                    try {
+                      reactPost(
+                        {
+                          profileId: profile?.id,
+                          reaction: 'UPVOTE',
+                          publicationId: id,
+                        },
+                        'REMOVE'
+                      )
+                      setReaction({
+                        isLiked: false,
+                        likeCount: reaction.likeCount - 1,
+                      })
+                      toast({
+                        title: 'Unliked Note.',
+                        description: 'Note has been unliked sucessfully.',
+                        ...getDefaultToastOptions('success'),
+                      })
+                    } catch (error) {
+                      toast({
+                        title: 'Unlike error.',
+                        description: getRPCErrorMessage(error),
+                        ...getDefaultToastOptions('error'),
+                      })
+                    }
+                  }}
+                />
+              ) : (
+                <IconButton
+                  icon={<BsHeart color="red" size="28" />}
+                  aria-label="upvote"
+                  onClick={async () => {
+                    try {
+                      reactPost(
+                        {
+                          profileId: profile?.id,
+                          reaction: 'UPVOTE',
+                          publicationId: id,
+                        },
+                        'ADD'
+                      )
+                      setReaction({
+                        isLiked: true,
+                        likeCount: reaction.likeCount + 1,
+                      })
+                      toast({
+                        title: 'Liked Note.',
+                        description: 'Note has been liked sucessfully.',
+                        ...getDefaultToastOptions('success'),
+                      })
+                    } catch (error) {
+                      toast({
+                        title: 'Like error.',
+                        description: getRPCErrorMessage(error),
+                        ...getDefaultToastOptions('error'),
+                      })
+                    }
+                  }}
+                />
+              )}
+            </Tooltip>
+            <VStack>
+              {note?.hasCollectedByMe && (
+                <Text color="green">You have already collected this note.</Text>
+              )}
+              <Tooltip
+                hasArrow
+                label={note?.hasCollectedByMe ? 'Collect Again' : 'Collect'}
+                placement="top"
+                shouldWrapChildren
+                mt="3"
+              >
+                <IconButton
+                  onClick={collectNote}
+                  isLoading={isCollecting}
+                  icon={<BsCollection color="red" size="28" />}
+                  aria-label={''}
+                />
+              </Tooltip>
+            </VStack>
+          </HStack>
         </Center>
         <Box p="4" boxShadow="lg" m="4" borderRadius="sm">
           <MdEditor

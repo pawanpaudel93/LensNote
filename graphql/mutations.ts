@@ -131,3 +131,14 @@ export const CREATE_COLLECT_TYPED_DATA = `
    }
  }
 `
+
+export const ADD_REACTION_MUTATION = `
+  mutation($request: ReactionRequest!) { 
+   addReaction(request: $request)
+ }
+`
+export const REMOVE_REACTION_MUTATION = `
+  mutation($request: ReactionRequest!) { 
+   removeReaction(request: $request)
+ }
+`

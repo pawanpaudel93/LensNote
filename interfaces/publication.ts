@@ -153,10 +153,12 @@ export interface INote {
   metadata: IMetadata
   id: string
   hasCollectedByMe: boolean
+  reaction: 'UPVOTE' | null
   stats: {
     totalAmountOfMirrors: number
     totalAmountOfCollects: number
     totalAmountOfComments: number
+    totalUpvotes: number
   }
   profile: {
     handle: string

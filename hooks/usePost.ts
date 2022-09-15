@@ -1,8 +1,10 @@
 import { useSigner, useSignTypedData } from 'wagmi'
 import { getLensHubContract, splitSignature } from '@/utils'
 import {
+  ADD_REACTION_MUTATION,
   CREATE_COLLECT_TYPED_DATA,
   CREATE_POST_TYPED_DATA,
+  REMOVE_REACTION_MUTATION,
 } from '@/graphql/mutations'
 import { useMutation } from 'urql'
 import { signedTypeData } from '@/utils'
@@ -13,6 +15,8 @@ export const usePost = () => {
 
   const [, createPostTypedData] = useMutation(CREATE_POST_TYPED_DATA)
   const [, createCollectTypedData] = useMutation(CREATE_COLLECT_TYPED_DATA)
+  const [, addReaction] = useMutation(ADD_REACTION_MUTATION)
+  const [, removeReaction] = useMutation(REMOVE_REACTION_MUTATION)
   const { signTypedDataAsync } = useSignTypedData()
 
   const createPost = async (createPostRequest: unknown) => {
@@ -78,8 +82,26 @@ export const usePost = () => {
     await tx.wait()
   }
 
+  const reactPost = async (
+    reactionRequest: unknown,
+    type: 'ADD' | 'REMOVE'
+  ) => {
+    if (type === 'ADD') {
+      const result = await addReaction({
+        request: reactionRequest,
+      })
+      if (result.error) throw result.error
+    } else {
+      const result = await removeReaction({
+        request: reactionRequest,
+      })
+      if (result.error) throw result.error
+    }
+  }
+
   return {
     createPost,
     collectPost,
+    reactPost,
   }
 }

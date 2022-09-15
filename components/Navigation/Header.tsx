@@ -35,7 +35,7 @@ interface NavLinkProps extends LinkProps {
 const NavItems: Array<NavItem> = [
   {
     key: 0,
-    label: 'Notes',
+    label: 'My Notes',
     href: '/notes',
   },
   {

@@ -1,42 +1,44 @@
 import type { NextPage } from 'next'
 import { APP_NAME } from '@/constants'
-import { GET_EXPLORE_PUBLICATIONS_QUERY } from '@/graphql/queries'
+import { GET_PUBLICATIONS_QUERY } from '@/graphql/queries'
 import { useClient } from 'urql'
 import { Box, Center, Container, SkeletonText, VStack } from '@chakra-ui/react'
 import { INote, PaginatedResultInfo } from '@/interfaces'
 import NoteInfo from '@/components/Notes/NoteInfo'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useEffect, useState } from 'react'
+import useAppStore from '@/lib/store'
 
 const Notes: NextPage = () => {
   const client = useClient()
   const [notes, setNotes] = useState<INote[]>([])
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
   const [fetching, setFetching] = useState(true)
+  const profile = useAppStore((state) => state.defaultProfile)
 
   const initialFetch = async () => {
     const result = await client
-      .query(GET_EXPLORE_PUBLICATIONS_QUERY, {
+      .query(GET_PUBLICATIONS_QUERY, {
         request: {
-          sortCriteria: 'LATEST',
-          noRandomize: true,
+          profileId: profile?.id,
           publicationTypes: ['POST', 'COMMENT', 'MIRROR'],
           limit: 10,
           sources: [APP_NAME],
         },
       })
       .toPromise()
-    setNotes(result?.data?.explorePublications?.items)
-    setPageInfo(result?.data?.explorePublications?.pageInfo)
+    if (result.data) {
+      setNotes([...notes, ...result?.data?.publications?.items])
+      setPageInfo(result?.data?.publications?.pageInfo)
+    }
     setFetching(false)
   }
 
   const fetchMore = async () => {
     const result = await client
-      .query(GET_EXPLORE_PUBLICATIONS_QUERY, {
+      .query(GET_PUBLICATIONS_QUERY, {
         request: {
-          sortCriteria: 'LATEST',
-          noRandomize: true,
+          profileId: profile?.id,
           publicationTypes: ['POST', 'COMMENT', 'MIRROR'],
           limit: 10,
           cursor: pageInfo?.next,
@@ -44,15 +46,17 @@ const Notes: NextPage = () => {
         },
       })
       .toPromise()
-    setNotes([...notes, ...result?.data?.explorePublications?.items])
-    setPageInfo(result?.data?.explorePublications?.pageInfo)
+    if (result.data) {
+      setNotes([...notes, ...result?.data?.publications?.items])
+      setPageInfo(result?.data?.publications?.pageInfo)
+    }
   }
 
   useEffect(() => {
-    if (notes.length === 0) {
+    if (profile?.id && notes.length === 0) {
       initialFetch()
     }
-  }, [])
+  }, [profile?.id])
 
   return fetching && notes.length === 0 ? (
     <Container maxW="full" px={12}>

@@ -83,7 +83,6 @@ export const useLogin = () => {
       )
       await setMyProfiles()
     } catch (error) {
-      console.log(error, getRPCErrorMessage(error))
       toast({
         title: 'Authentication error.',
         description: getRPCErrorMessage(error),
