@@ -1,3 +1,4 @@
+import { ApprovedAllowanceAmount, INote, IProfile } from '@/interfaces'
 import {
   Box,
   Flex,
@@ -8,9 +9,11 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react'
 import { ReactNode } from 'react'
-import { BsCollection, BsHeartFill } from 'react-icons/bs'
 import { FaComment } from 'react-icons/fa'
 import { GoMirror } from 'react-icons/go'
+import NoteCollect from './NoteCollect'
+import NoteMirror from './NoteMirror'
+import NoteReact from './NoteReact'
 
 interface StatsCardProps {
   title: string
@@ -48,14 +51,13 @@ function StatsCard(props: StatsCardProps) {
 }
 
 export default function NoteStats({
-  stats,
+  approvedModuleAllowanceAmount,
+  note,
+  profile,
 }: {
-  stats: {
-    totalAmountOfMirrors: number
-    totalAmountOfCollects: number
-    totalAmountOfComments: number
-    totalUpvotes: number
-  }
+  approvedModuleAllowanceAmount: ApprovedAllowanceAmount[]
+  note: INote
+  profile: IProfile
 }) {
   return (
     <Box maxW="2xl" mx={'auto'} py={4} px={{ base: 2, sm: 12, md: 17 }}>
@@ -65,22 +67,27 @@ export default function NoteStats({
       >
         <StatsCard
           title={'Mirrors'}
-          stat={(stats?.totalAmountOfMirrors ?? 0).toString()}
-          icon={<GoMirror size={'1.5em'} />}
+          stat={(note?.stats?.totalAmountOfMirrors ?? 0).toString()}
+          icon={<NoteMirror profile={profile} publicationId={note?.id} />}
         />
         <StatsCard
           title={'Collects'}
-          stat={(stats?.totalAmountOfCollects ?? 0).toString()}
-          icon={<BsCollection color="red" size={'1.5em'} />}
+          stat={(note?.stats?.totalAmountOfCollects ?? 0).toString()}
+          icon={
+            <NoteCollect
+              note={note}
+              approvedModuleAllowanceAmount={approvedModuleAllowanceAmount}
+            />
+          }
         />
         <StatsCard
           title={'Likes'}
-          stat={(stats?.totalUpvotes ?? 0).toString()}
-          icon={<BsHeartFill color="red" size={'1.5em'} />}
+          stat={(note?.stats?.totalUpvotes ?? 0).toString()}
+          icon={<NoteReact note={note} profile={profile} />}
         />
         <StatsCard
           title={'Comments'}
-          stat={(stats?.totalAmountOfComments ?? 0).toString()}
+          stat={(note?.stats?.totalAmountOfComments ?? 0).toString()}
           icon={<FaComment size={'1.5em'} />}
         />
       </SimpleGrid>

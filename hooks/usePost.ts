@@ -3,6 +3,7 @@ import { getLensHubContract, splitSignature } from '@/utils'
 import {
   ADD_REACTION_MUTATION,
   CREATE_COLLECT_TYPED_DATA,
+  CREATE_MIRROR_TYPED_DATA,
   CREATE_POST_TYPED_DATA,
   REMOVE_REACTION_MUTATION,
 } from '@/graphql/mutations'
@@ -15,6 +16,7 @@ export const usePost = () => {
 
   const [, createPostTypedData] = useMutation(CREATE_POST_TYPED_DATA)
   const [, createCollectTypedData] = useMutation(CREATE_COLLECT_TYPED_DATA)
+  const [, createMirrorTypedData] = useMutation(CREATE_MIRROR_TYPED_DATA)
   const [, addReaction] = useMutation(ADD_REACTION_MUTATION)
   const [, removeReaction] = useMutation(REMOVE_REACTION_MUTATION)
   const { signTypedDataAsync } = useSignTypedData()
@@ -82,6 +84,37 @@ export const usePost = () => {
     await tx.wait()
   }
 
+  const createMirror = async (createMirrorRequest: unknown) => {
+    const lensHub = getLensHubContract(signer as ethers.Signer)
+    const result = await createMirrorTypedData({ request: createMirrorRequest })
+    if (result.error) throw result.error
+    const typedData = result.data.createMirrorTypedData.typedData
+
+    const signature = await signedTypeData(
+      signTypedDataAsync,
+      typedData.domain,
+      typedData.types,
+      typedData.value
+    )
+    const { v, r, s } = splitSignature(signature)
+
+    const tx = await lensHub.mirrorWithSig({
+      profileId: typedData.value.profileId,
+      profileIdPointed: typedData.value.profileIdPointed,
+      pubIdPointed: typedData.value.pubIdPointed,
+      referenceModuleData: typedData.value.referenceModuleData,
+      referenceModule: typedData.value.referenceModule,
+      referenceModuleInitData: typedData.value.referenceModuleInitData,
+      sig: {
+        v,
+        r,
+        s,
+        deadline: typedData.value.deadline,
+      },
+    })
+    await tx.wait()
+  }
+
   const reactPost = async (
     reactionRequest: unknown,
     type: 'ADD' | 'REMOVE'
@@ -102,6 +135,7 @@ export const usePost = () => {
   return {
     createPost,
     collectPost,
+    createMirror,
     reactPost,
   }
 }

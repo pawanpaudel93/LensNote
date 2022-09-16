@@ -131,6 +131,38 @@ export const CREATE_COLLECT_TYPED_DATA = `
    }
  }
 `
+export const CREATE_MIRROR_TYPED_DATA = `
+  mutation($request: CreateMirrorRequest!) { 
+    createMirrorTypedData(request: $request) {
+      id
+      expiresAt
+      typedData {
+        types {
+          MirrorWithSig {
+            name
+            type
+          }
+        }
+      domain {
+        name
+        chainId
+        version
+        verifyingContract
+      }
+      value {
+        nonce
+        deadline
+        profileId
+        profileIdPointed
+        pubIdPointed
+                referenceModule
+        referenceModuleData
+        referenceModuleInitData
+      }
+     }
+   }
+ }
+`
 
 export const ADD_REACTION_MUTATION = `
   mutation($request: ReactionRequest!) { 

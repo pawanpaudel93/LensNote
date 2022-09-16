@@ -1,56 +1,19 @@
 import type { NextPage } from 'next'
-import { useClient, useQuery } from 'urql'
-import {
-  GET_PUBLICATION_QUERY,
-  GET_ALLOWANCE_QUERY,
-  MODULE_APPROVAL_DATA,
-} from '@/graphql/queries'
+import { useQuery } from 'urql'
+import { GET_PUBLICATION_QUERY, GET_ALLOWANCE_QUERY } from '@/graphql/queries'
 import { useRouter } from 'next/router'
-import { ApprovedAllowanceAmount, INote } from '@/interfaces'
+import { ApprovedAllowanceAmount, INote, IProfile } from '@/interfaces'
 import NoteInfo from '@/components/Notes/NoteInfo'
 import MdEditor from 'md-editor-rt'
 import 'md-editor-rt/lib/style.css'
-import {
-  Box,
-  Center,
-  Container,
-  SkeletonText,
-  VStack,
-  Text,
-  useToast,
-  HStack,
-  IconButton,
-  Tooltip,
-} from '@chakra-ui/react'
-import { usePost } from '@/hooks/usePost'
-import { useEffect, useState } from 'react'
+import { Box, Container, SkeletonText } from '@chakra-ui/react'
 import NoteStats from '@/components/Notes/NoteStats'
-import { WMATIC_TOKEN_ADDRESS, WMATIC_ABI } from '@/constants'
-import { ethers } from 'ethers'
-import { usePrepareSendTransaction, useSendTransaction, useSigner } from 'wagmi'
-import { getDefaultToastOptions } from '@/lib/utils'
-import { getRPCErrorMessage } from '@/lib/parser'
-import { BsCollection, BsHeart, BsHeartFill } from 'react-icons/bs'
+import { WMATIC_TOKEN_ADDRESS } from '@/constants'
 import useAppStore from '@/lib/store'
 
 const Note: NextPage = () => {
   const profile = useAppStore((state) => state.defaultProfile)
-  const [isCollecting, setIsCollecting] = useState(false)
-  const { collectPost, reactPost } = usePost()
-  const { data: signer } = useSigner()
-  const client = useClient()
-  const toast = useToast()
 
-  const { config: prepareTxn } = usePrepareSendTransaction({
-    request: {},
-  })
-  const { sendTransactionAsync } = useSendTransaction({
-    ...prepareTxn,
-    mode: 'recklesslyUnprepared',
-    onError(error: unknown) {
-      console.log(error)
-    },
-  })
   const {
     query: { id },
   } = useRouter()
@@ -89,196 +52,17 @@ const Note: NextPage = () => {
   const approvedModuleAllowanceAmount: ApprovedAllowanceAmount[] =
     currencyData?.data?.approvedModuleAllowanceAmount ?? []
   const note: INote = data?.data?.publication
-  const [reaction, setReaction] = useState({
-    isLiked: false,
-    likeCount: 0,
-  })
-
-  useEffect(() => {
-    if (data.fetching === false) {
-      setReaction({
-        isLiked: note?.reaction === 'UPVOTE',
-        likeCount: note?.stats?.totalUpvotes,
-      })
-    }
-  }, [data.fetching])
-
-  const collectNote = async () => {
-    try {
-      setIsCollecting(true)
-      const wMatic = new ethers.Contract(
-        WMATIC_TOKEN_ADDRESS,
-        WMATIC_ABI,
-        signer as ethers.Signer
-      )
-      const noteType = note.collectModule.type
-      const allowance = parseInt(
-        approvedModuleAllowanceAmount.find(
-          (allowanceModule) => allowanceModule.module === noteType
-        )?.allowance ?? '0x00'
-      )
-      const collectPrice = parseFloat(note.collectModule.amount.value)
-      const walletBalance = parseFloat(
-        ethers.utils.formatEther(
-          await wMatic.balanceOf(await signer?.getAddress())
-        )
-      )
-
-      if (walletBalance < collectPrice) {
-        console.log('wallet balance is low')
-        const tx = await wMatic.deposit({
-          value: ethers.utils.parseEther(
-            (collectPrice - walletBalance).toFixed(18).toString()
-          ),
-        })
-        await tx.wait()
-      }
-      if (
-        allowance === 0 ||
-        allowance <
-          parseInt(ethers.utils.parseEther(collectPrice.toString()).toString())
-      ) {
-        const result = await client
-          .query(MODULE_APPROVAL_DATA, {
-            request: {
-              currency: WMATIC_TOKEN_ADDRESS,
-              value: Number.MAX_SAFE_INTEGER.toString(),
-              collectModule: noteType,
-            },
-          })
-          .toPromise()
-        const generateModuleCurrencyApprovalData =
-          result.data.generateModuleCurrencyApprovalData
-
-        const tx = await sendTransactionAsync?.({
-          recklesslySetUnpreparedRequest: {
-            from: generateModuleCurrencyApprovalData.from,
-            to: generateModuleCurrencyApprovalData.to,
-            data: generateModuleCurrencyApprovalData.data,
-          },
-        })
-        await tx.wait()
-      }
-      await collectPost({ publicationId: id })
-      toast({
-        title: 'Note collected.',
-        description: 'Note has been collected sucessfully.',
-        ...getDefaultToastOptions('success'),
-      })
-    } catch (error) {
-      toast({
-        title: 'Note collection error.',
-        description: getRPCErrorMessage(error),
-        ...getDefaultToastOptions('error'),
-      })
-    } finally {
-      setIsCollecting(false)
-    }
-  }
 
   return (
     <Container maxW="full" px={12}>
       <SkeletonText noOfLines={4} spacing="4" isLoaded={!data.fetching}>
         <NoteInfo note={note} isDetailPage />
         <NoteStats
-          stats={{ ...note?.stats, totalUpvotes: reaction.likeCount }}
+          note={note}
+          approvedModuleAllowanceAmount={approvedModuleAllowanceAmount}
+          profile={profile as IProfile}
         />
-        <Center>
-          <HStack>
-            <Tooltip
-              hasArrow
-              label={reaction.isLiked ? 'Unlike' : 'Like'}
-              placement="top"
-              shouldWrapChildren
-              mt="3"
-            >
-              {reaction.isLiked ? (
-                <IconButton
-                  icon={<BsHeartFill color="red" size="28" />}
-                  aria-label="upvote"
-                  onClick={async () => {
-                    try {
-                      reactPost(
-                        {
-                          profileId: profile?.id,
-                          reaction: 'UPVOTE',
-                          publicationId: id,
-                        },
-                        'REMOVE'
-                      )
-                      setReaction({
-                        isLiked: false,
-                        likeCount: reaction.likeCount - 1,
-                      })
-                      toast({
-                        title: 'Unliked Note.',
-                        description: 'Note has been unliked sucessfully.',
-                        ...getDefaultToastOptions('success'),
-                      })
-                    } catch (error) {
-                      toast({
-                        title: 'Unlike error.',
-                        description: getRPCErrorMessage(error),
-                        ...getDefaultToastOptions('error'),
-                      })
-                    }
-                  }}
-                />
-              ) : (
-                <IconButton
-                  icon={<BsHeart color="red" size="28" />}
-                  aria-label="upvote"
-                  onClick={async () => {
-                    try {
-                      reactPost(
-                        {
-                          profileId: profile?.id,
-                          reaction: 'UPVOTE',
-                          publicationId: id,
-                        },
-                        'ADD'
-                      )
-                      setReaction({
-                        isLiked: true,
-                        likeCount: reaction.likeCount + 1,
-                      })
-                      toast({
-                        title: 'Liked Note.',
-                        description: 'Note has been liked sucessfully.',
-                        ...getDefaultToastOptions('success'),
-                      })
-                    } catch (error) {
-                      toast({
-                        title: 'Like error.',
-                        description: getRPCErrorMessage(error),
-                        ...getDefaultToastOptions('error'),
-                      })
-                    }
-                  }}
-                />
-              )}
-            </Tooltip>
-            <VStack>
-              {note?.hasCollectedByMe && (
-                <Text color="green">You have already collected this note.</Text>
-              )}
-              <Tooltip
-                hasArrow
-                label={note?.hasCollectedByMe ? 'Collect Again' : 'Collect'}
-                placement="top"
-                shouldWrapChildren
-                mt="3"
-              >
-                <IconButton
-                  onClick={collectNote}
-                  isLoading={isCollecting}
-                  icon={<BsCollection color="red" size="28" />}
-                  aria-label={''}
-                />
-              </Tooltip>
-            </VStack>
-          </HStack>
-        </Center>
+
         <Box p="4" boxShadow="lg" m="4" borderRadius="sm">
           <MdEditor
             modelValue={note?.metadata?.content as string}

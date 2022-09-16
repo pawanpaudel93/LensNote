@@ -149,7 +149,7 @@ export interface IMetadata {
 }
 
 export interface INote {
-  __typename: 'Post'
+  __typename: 'Post' | 'Mirror'
   metadata: IMetadata
   id: string
   hasCollectedByMe: boolean
