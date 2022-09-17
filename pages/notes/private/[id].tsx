@@ -25,7 +25,7 @@ const PrivateNote: NextPage = () => {
     description: '',
     content: '',
     tags: '',
-    contentCid: '',
+    contentId: '',
     encryptedSymmetricKey: '',
     accessControlConditions: [],
     createdAt: new Date().getTime(),
@@ -44,6 +44,12 @@ const PrivateNote: NextPage = () => {
 
     if (notes.length > 0) {
       const privateNote = notes[0]
+      if (privateNote.contentId) {
+        privateNote.content = await (
+          await fetch(`https://${privateNote.contentId}.ipfs.w3s.link/`)
+        ).text()
+      }
+
       setNote(privateNote)
       await lit.connect()
       const { decryptedString } = await lit.decrypt(

@@ -185,7 +185,7 @@ export interface IPrivateMetadata {
   description: string
   content: string
   tags: string[] | string
-  contentCid: string
+  contentId: string
   encryptedSymmetricKey: string
   accessControlConditions: object
   createdAt: number

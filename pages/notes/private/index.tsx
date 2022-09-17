@@ -20,7 +20,7 @@ const PrivateNotes: NextPage = () => {
       chain: 'polygon-mumbai',
     })
     const readRes = await tableland.read(
-      `SELECT * FROM ${TABLELAND_NOTE_TABLE} where lensId='${profile?.id}'`
+      `SELECT * FROM ${TABLELAND_NOTE_TABLE}`
     )
     const notes = resultsToObjects(readRes) as IPrivateMetadata[]
     console.log(notes)

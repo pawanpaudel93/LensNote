@@ -26,7 +26,7 @@ export const usePersistStore = create(
         description: '',
         content: '# Note',
         tags: [],
-        contentCid: '',
+        contentId: '',
         encryptedSymmetricKey: '',
         accessControlConditions: {},
         createdAt: new Date().getTime(),
