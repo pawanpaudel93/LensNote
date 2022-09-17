@@ -9,7 +9,9 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Spinner,
   Textarea,
+  useColorMode,
   useToast,
   VStack,
 } from '@chakra-ui/react'
@@ -20,29 +22,24 @@ import 'md-editor-rt/lib/style.css'
 import lit from '@/lib/lit'
 import { TABLELAND_NOTE_TABLE } from '@/constants'
 import useAppStore from '@/lib/store'
-import { IPrivateMetadata, IProfile } from '@/interfaces'
+import { IProfile } from '@/interfaces'
 import { getRPCErrorMessage } from '@/lib/parser'
 import { getDefaultToastOptions } from '@/lib/utils'
+import { SettingsIcon } from '@chakra-ui/icons'
+import usePersistStore from '@/lib/store/persist'
+import { useIsMounted } from '@/hooks/useIsMounted'
 
 let tableland: Connection
 const CreatePrivateNote: NextPage = () => {
+  const { colorMode } = useColorMode()
+  const mounted = useIsMounted()
   const [isLoading, setIsLoading] = useState(false)
   const toast = useToast()
   const profile = useAppStore((store) => store.defaultProfile) as IProfile
   const [showShareModal, setShowShareModal] = useState(false)
   const toolbarsExclude: ToolbarNames[] = ['github']
-  const unixTime = new Date().getTime()
-  const [metadata, setMetadata] = useState<IPrivateMetadata>({
-    title: '',
-    description: '',
-    content: '# Note',
-    tags: [],
-    contentCid: '',
-    encryptedSymmetricKey: '',
-    accessControlConditions: {},
-    createdAt: unixTime,
-    updatedAt: unixTime,
-  })
+  const metadata = usePersistStore((state) => state.privateNote)
+  const setMetadata = usePersistStore((state) => state.setPrivateNote)
 
   const selectProps = useChakraSelectProps({
     placeholder: 'Tags...',
@@ -50,14 +47,16 @@ const CreatePrivateNote: NextPage = () => {
       value: tag,
       label: tag,
     })),
+    id: 'private-note-tags',
+    instanceId: 'private-note-tags',
     isMulti: true,
     onChange: (tags) => {
-      setMetadata((prev: IPrivateMetadata) => ({
-        ...prev,
+      setMetadata({
+        ...metadata,
         tags: (tags as { label: string; value: string }[]).map(
           (tag) => tag.value
         ),
-      }))
+      })
     },
   })
 
@@ -76,14 +75,19 @@ const CreatePrivateNote: NextPage = () => {
     e.preventDefault()
     try {
       setIsLoading(true)
-      if (isEmpty(metadata.accessControlConditions)) return
+      if (isEmpty(metadata.accessControlConditions)) {
+        return toast({
+          title: 'Privacy settings required.',
+          ...getDefaultToastOptions('error'),
+        })
+      }
       await lit.connect()
       const { encryptedString, encryptedSymmetricKey } = await lit.encrypt(
         metadata.content,
         metadata.accessControlConditions
       )
 
-      setMetadata((prev) => ({ ...prev, encryptedSymmetricKey }))
+      setMetadata({ ...metadata, encryptedSymmetricKey })
 
       if (textKBSize(encryptedString) >= 1) {
         const response = await fetch('/api/upload', {
@@ -143,9 +147,11 @@ const CreatePrivateNote: NextPage = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onUnifiedAccessControlConditionsSelected = (shareModalOutput: any) => {
-    metadata.accessControlConditions =
-      shareModalOutput.unifiedAccessControlConditions
-    setShowShareModal(false)
+    // setShowShareModal(false)
+    setMetadata({
+      ...metadata,
+      accessControlConditions: shareModalOutput.unifiedAccessControlConditions,
+    })
   }
 
   async function initTableland() {
@@ -159,6 +165,20 @@ const CreatePrivateNote: NextPage = () => {
     initTableland()
   }, [])
 
+  if (!mounted) {
+    return (
+      <Center top="50%" left="50%" position="fixed">
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="blue.500"
+          size="xl"
+        />
+      </Center>
+    )
+  }
+
   return (
     <Container maxW="full" px={12}>
       <form onSubmit={onSubmit}>
@@ -167,11 +187,12 @@ const CreatePrivateNote: NextPage = () => {
             <FormLabel>Title</FormLabel>
             <Input
               placeholder="Title"
+              value={metadata.title}
               onChange={(e) => {
-                setMetadata((prev: IPrivateMetadata) => ({
-                  ...prev,
+                setMetadata({
+                  ...metadata,
                   title: e.target.value,
-                }))
+                })
               }}
             />
           </FormControl>
@@ -180,10 +201,10 @@ const CreatePrivateNote: NextPage = () => {
             <Textarea
               value={metadata.description as string}
               onChange={(e) =>
-                setMetadata((prev: IPrivateMetadata) => ({
-                  ...prev,
+                setMetadata({
+                  ...metadata,
                   description: e.target.value,
-                }))
+                })
               }
               placeholder="Description"
               size="sm"
@@ -196,11 +217,12 @@ const CreatePrivateNote: NextPage = () => {
               modelValue={metadata.content as string}
               toolbarsExclude={toolbarsExclude}
               onChange={(v: string) => {
-                setMetadata((prev: IPrivateMetadata) => ({
-                  ...prev,
+                setMetadata({
+                  ...metadata,
                   content: v,
-                }))
+                })
               }}
+              theme={colorMode}
             />
           </FormControl>
           <FormControl>
@@ -208,9 +230,14 @@ const CreatePrivateNote: NextPage = () => {
             <CreatableSelect {...selectProps} />
           </FormControl>
           <div>
-            <button onClick={() => setShowShareModal(true)}>
+            <Button
+              onClick={() => setShowShareModal(true)}
+              leftIcon={<SettingsIcon />}
+              colorScheme="teal"
+              variant="solid"
+            >
               Privacy Setting
-            </button>
+            </Button>
 
             {showShareModal && (
               <div
@@ -232,9 +259,11 @@ const CreatePrivateNote: NextPage = () => {
                   onClose={() => {
                     setShowShareModal(false)
                   }}
+                  isModal={true}
                   onUnifiedAccessControlConditionsSelected={
                     onUnifiedAccessControlConditionsSelected
                   }
+                  darkMode={colorMode === 'dark'}
                 />
               </div>
             )}

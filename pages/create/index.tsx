@@ -1,7 +1,6 @@
 import type { NextPage } from 'next'
 import { FormEvent, useEffect, useState } from 'react'
 import MdEditor, { type ToolbarNames } from 'md-editor-rt'
-import { v4 as uuidv4 } from 'uuid'
 import { CreatableSelect, useChakraSelectProps } from 'chakra-react-select'
 import {
   Button,
@@ -18,21 +17,19 @@ import {
   Stack,
   HStack,
   useToast,
+  useColorMode,
+  Spinner,
 } from '@chakra-ui/react'
-import {
-  IMetadata,
-  PublicationMetadataVersions,
-  PublicationMainFocus,
-  PublicationMetadataDisplayType,
-} from '@/interfaces/'
 import { usePost } from '@/hooks/usePost'
 import { useAccount } from 'wagmi'
-import { APP_NAME, WMATIC_TOKEN_ADDRESS } from '@/constants'
+import { WMATIC_TOKEN_ADDRESS } from '@/constants'
 import { CollectModules, CommonFeeCollectModuleParams } from '@/interfaces'
 import 'md-editor-rt/lib/style.css'
 import useAppStore from '@/lib/store'
 import { getRPCErrorMessage } from '@/lib/parser'
 import { getDefaultToastOptions } from '@/lib/utils'
+import usePersistStore from '@/lib/store/persist'
+import { useIsMounted } from '@/hooks/useIsMounted'
 
 const collectModuleTypes = {
   FreeCollectModule: 'Free Collect',
@@ -44,6 +41,7 @@ const collectModuleTypes = {
 }
 
 const CreateNote: NextPage = () => {
+  const { colorMode } = useColorMode()
   const { createPost } = usePost()
   const toast = useToast()
   const { address } = useAccount()
@@ -53,6 +51,7 @@ const CreateNote: NextPage = () => {
   const toolbarsExclude: ToolbarNames[] = ['github']
   const [value, setValue] = useState('false')
   const [followerOnlyReference, setFollowerOnlyReference] = useState('false')
+  const mounted = useIsMounted()
   const [collect, setCollect] = useState<CommonFeeCollectModuleParams>({
     collectLimit: '100000',
     amount: {
@@ -63,42 +62,22 @@ const CreateNote: NextPage = () => {
     referralFee: 10,
     followerOnly: false,
   })
-  const [metadata, setMetadata] = useState<IMetadata>({
-    version: PublicationMetadataVersions.two,
-    metadata_id: uuidv4(),
-    name: '',
-    description: '',
-    content: '# Note',
-    locale: 'en-US',
-    tags: [],
-    contentWarning: null,
-    mainContentFocus: PublicationMainFocus.ARTICLE,
-    external_url: null,
-    image: null,
-    imageMimeType: null,
-    media: null,
-    animation_url: null,
-    attributes: [
-      {
-        displayType: PublicationMetadataDisplayType.string,
-        traitType: 'type',
-        value: 'note',
-      },
-    ],
-    appId: APP_NAME,
-  })
+  const metadata = usePersistStore((state) => state.publicNote)
+  const setMetadata = usePersistStore((state) => state.setPublicNote)
 
   const selectProps = useChakraSelectProps({
     placeholder: 'Tags...',
     value: metadata.tags?.map((tag) => ({ value: tag, label: tag })),
     isMulti: true,
+    id: 'public-note-tags',
+    instanceId: 'public-note-tags',
     onChange: (tags) => {
-      setMetadata((prev: IMetadata) => ({
-        ...prev,
+      setMetadata({
+        ...metadata,
         tags: (tags as { label: string; value: string }[]).map(
           (tag) => tag.value
         ),
-      }))
+      })
     },
   })
 
@@ -347,6 +326,20 @@ const CreateNote: NextPage = () => {
     )
   }
 
+  if (!mounted) {
+    return (
+      <Center top="50%" left="50%" position="fixed">
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="blue.500"
+          size="xl"
+        />
+      </Center>
+    )
+  }
+
   return (
     <Container maxW="full" px={12}>
       <form onSubmit={onSubmit}>
@@ -355,11 +348,12 @@ const CreateNote: NextPage = () => {
             <FormLabel>Title</FormLabel>
             <Input
               placeholder="Title"
+              value={metadata.name}
               onChange={(e) => {
-                setMetadata((prev: IMetadata) => ({
-                  ...prev,
+                setMetadata({
+                  ...metadata,
                   name: e.target.value,
-                }))
+                })
               }}
             />
           </FormControl>
@@ -368,10 +362,10 @@ const CreateNote: NextPage = () => {
             <Textarea
               value={metadata.description as string}
               onChange={(e) =>
-                setMetadata((prev: IMetadata) => ({
-                  ...prev,
+                setMetadata({
+                  ...metadata,
                   description: e.target.value,
-                }))
+                })
               }
               placeholder="Description"
               size="sm"
@@ -384,8 +378,9 @@ const CreateNote: NextPage = () => {
               modelValue={metadata.content as string}
               toolbarsExclude={toolbarsExclude}
               onChange={(v: string) => {
-                setMetadata((prev: IMetadata) => ({ ...prev, content: v }))
+                setMetadata({ ...metadata, content: v })
               }}
+              theme={colorMode}
             />
           </FormControl>
           <FormControl>
