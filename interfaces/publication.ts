@@ -148,18 +148,20 @@ export interface IMetadata {
   appId?: AppId | undefined | null
 }
 
+export type NoteStats = {
+  totalAmountOfMirrors: number
+  totalAmountOfCollects: number
+  totalAmountOfComments: number
+  totalUpvotes: number
+}
+
 export interface INote {
   __typename: 'Post' | 'Mirror'
   metadata: IMetadata
   id: string
   hasCollectedByMe: boolean
   reaction: 'UPVOTE' | null
-  stats: {
-    totalAmountOfMirrors: number
-    totalAmountOfCollects: number
-    totalAmountOfComments: number
-    totalUpvotes: number
-  }
+  stats: NoteStats
   profile: {
     handle: string
   }
@@ -169,6 +171,7 @@ export interface INote {
       value: string
     }
   }
+  mirrorOf?: INote
 }
 export interface FreeCollectModuleParams {
   followerOnly: boolean

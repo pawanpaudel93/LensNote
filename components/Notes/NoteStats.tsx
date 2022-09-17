@@ -10,7 +10,6 @@ import {
 } from '@chakra-ui/react'
 import { ReactNode } from 'react'
 import { FaComment } from 'react-icons/fa'
-import { GoMirror } from 'react-icons/go'
 import NoteCollect from './NoteCollect'
 import NoteMirror from './NoteMirror'
 import NoteReact from './NoteReact'

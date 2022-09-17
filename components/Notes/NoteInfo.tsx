@@ -1,6 +1,8 @@
 import { INote } from '@/interfaces'
-import { Stack, Button, Text, Tag } from '@chakra-ui/react'
+import { Stack, Button, Text, Tag, HStack } from '@chakra-ui/react'
 import NextLink from 'next/link'
+import { GoMirror } from 'react-icons/go'
+import NoteStatsOnly from './NoteStatsOnly'
 
 export default function NoteInfo({
   note,
@@ -9,9 +11,16 @@ export default function NoteInfo({
   isDetailPage: boolean
   note: INote
 }) {
+  const isMirrored = note?.mirrorOf ? true : false
   return (
     <Stack p="4" boxShadow="lg" m="4" borderRadius="sm" minW="full">
-      <Stack direction="row" alignItems="center">
+      <Stack direction="column" alignItems="start">
+        {isMirrored && (
+          <HStack>
+            <GoMirror color="gray" />
+            <Text color="gray">{note?.profile?.handle} mirrored the note.</Text>
+          </HStack>
+        )}
         <Text fontWeight="semibold">{note?.metadata?.name}</Text>
       </Stack>
 
@@ -32,8 +41,12 @@ export default function NoteInfo({
           </Stack>
         )}
       </Stack>
+      {!isDetailPage && <NoteStatsOnly stats={note?.stats} />}
       <Text>
-        <b>Note By</b>: <Tag>{note?.profile?.handle}</Tag>
+        <b>Note By</b>:{' '}
+        <Tag>
+          {isMirrored ? note?.mirrorOf?.profile?.handle : note?.profile?.handle}
+        </Tag>
       </Text>
     </Stack>
   )
