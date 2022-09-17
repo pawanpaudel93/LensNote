@@ -6,14 +6,14 @@ import { ApprovedAllowanceAmount, INote, IProfile } from '@/interfaces'
 import NoteInfo from '@/components/Notes/NoteInfo'
 import MdEditor from 'md-editor-rt'
 import 'md-editor-rt/lib/style.css'
-import { Box, Container, SkeletonText } from '@chakra-ui/react'
+import { Box, Container, SkeletonText, useColorMode } from '@chakra-ui/react'
 import NoteStats from '@/components/Notes/NoteStats'
 import { WMATIC_TOKEN_ADDRESS } from '@/constants'
 import useAppStore from '@/lib/store'
 
 const Note: NextPage = () => {
   const profile = useAppStore((state) => state.defaultProfile)
-
+  const { colorMode } = useColorMode()
   const {
     query: { id },
   } = useRouter()
@@ -66,7 +66,11 @@ const Note: NextPage = () => {
         <Box p="4" boxShadow="lg" m="4" borderRadius="sm">
           <MdEditor
             modelValue={note?.metadata?.content as string}
+            style={{
+              padding: '25px',
+            }}
             language="en-US"
+            theme={colorMode}
             previewOnly
           />
         </Box>

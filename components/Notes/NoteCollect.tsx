@@ -1,12 +1,18 @@
 import { WMATIC_TOKEN_ADDRESS, WMATIC_ABI } from '@/constants'
 import { MODULE_APPROVAL_DATA } from '@/graphql/queries'
 import { usePost } from '@/hooks/usePost'
-import { ApprovedAllowanceAmount, INote } from '@/interfaces'
+import {
+  ApprovedAllowanceAmount,
+  INote,
+  CollectModules,
+  FreeCollectModuleParams,
+  CommonFeeCollectModuleParams,
+} from '@/interfaces'
 import { getRPCErrorMessage } from '@/lib/parser'
 import { getDefaultToastOptions } from '@/lib/utils'
 import { IconButton, Tooltip, useToast } from '@chakra-ui/react'
 import { ethers } from 'ethers'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BsCollection } from 'react-icons/bs'
 import { useClient } from 'urql'
 import { usePrepareSendTransaction, useSendTransaction, useSigner } from 'wagmi'
@@ -19,10 +25,35 @@ const NoteCollect = ({
   note: INote
 }) => {
   const [isCollecting, setIsCollecting] = useState(false)
+  const [isCollectable, setIsCollectable] = useState(true)
   const toast = useToast()
   const client = useClient()
   const { data: signer } = useSigner()
   const { collectPost } = usePost()
+
+  useEffect(() => {
+    if (note?.id) {
+      const isFollower = note?.profile.isFollowing
+      if (note?.collectModule?.type === CollectModules.FreeCollectModule) {
+        const collectModule =
+          note?.collectModule as unknown as FreeCollectModuleParams
+        if (collectModule.followerOnly && !isFollower) {
+          setIsCollectable(false)
+        }
+      } else if (
+        note?.collectModule?.type === CollectModules.RevertCollectModule
+      ) {
+        setIsCollectable(false)
+      } else {
+        const collectModule =
+          note?.collectModule as unknown as CommonFeeCollectModuleParams
+        if (collectModule.followerOnly && !isFollower) {
+          setIsCollectable(false)
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [note?.id])
 
   const { config: prepareTxn } = usePrepareSendTransaction({
     request: {},
@@ -38,58 +69,67 @@ const NoteCollect = ({
   const collectNote = async () => {
     try {
       setIsCollecting(true)
-      const wMatic = new ethers.Contract(
-        WMATIC_TOKEN_ADDRESS,
-        WMATIC_ABI,
-        signer as ethers.Signer
-      )
       const noteType = note.collectModule.type
-      const allowance = parseInt(
-        approvedModuleAllowanceAmount.find(
-          (allowanceModule) => allowanceModule.module === noteType
-        )?.allowance ?? '0x00'
-      )
-      const collectPrice = parseFloat(note.collectModule.amount.value)
-      const walletBalance = parseFloat(
-        ethers.utils.formatEther(
-          await wMatic.balanceOf(await signer?.getAddress())
+      if (noteType !== CollectModules.FreeCollectModule) {
+        const wMatic = new ethers.Contract(
+          WMATIC_TOKEN_ADDRESS,
+          WMATIC_ABI,
+          signer as ethers.Signer
         )
-      )
 
-      if (walletBalance < collectPrice) {
-        console.log('wallet balance is low')
-        const tx = await wMatic.deposit({
-          value: ethers.utils.parseEther(
-            (collectPrice - walletBalance).toFixed(18).toString()
-          ),
-        })
-        await tx.wait()
-      }
-      if (
-        allowance === 0 ||
-        allowance <
-          parseInt(ethers.utils.parseEther(collectPrice.toString()).toString())
-      ) {
-        const result = await client
-          .query(MODULE_APPROVAL_DATA, {
-            request: {
-              currency: WMATIC_TOKEN_ADDRESS,
-              value: Number.MAX_SAFE_INTEGER.toString(),
-              collectModule: noteType,
+        const allowance = parseInt(
+          approvedModuleAllowanceAmount.find(
+            (allowanceModule) => allowanceModule.module === noteType
+          )?.allowance ?? '0x00'
+        )
+        const collectPrice = parseFloat(note.collectModule.amount.value)
+        const walletBalance = parseFloat(
+          ethers.utils.formatEther(
+            await wMatic.balanceOf(await signer?.getAddress())
+          )
+        )
+
+        if (walletBalance < collectPrice) {
+          toast({
+            title: 'Low wMATIC balance',
+            description: 'Trying to convert the required wMATIC from MATIC.',
+            ...getDefaultToastOptions('info'),
+          })
+          const tx = await wMatic.deposit({
+            value: ethers.utils.parseEther(
+              (collectPrice - walletBalance).toFixed(18).toString()
+            ),
+          })
+          await tx.wait()
+        }
+        if (
+          allowance === 0 ||
+          allowance <
+            parseInt(
+              ethers.utils.parseEther(collectPrice.toString()).toString()
+            )
+        ) {
+          const result = await client
+            .query(MODULE_APPROVAL_DATA, {
+              request: {
+                currency: WMATIC_TOKEN_ADDRESS,
+                value: Number.MAX_SAFE_INTEGER.toString(),
+                collectModule: noteType,
+              },
+            })
+            .toPromise()
+          const generateModuleCurrencyApprovalData =
+            result.data.generateModuleCurrencyApprovalData
+
+          const tx = await sendTransactionAsync?.({
+            recklesslySetUnpreparedRequest: {
+              from: generateModuleCurrencyApprovalData.from,
+              to: generateModuleCurrencyApprovalData.to,
+              data: generateModuleCurrencyApprovalData.data,
             },
           })
-          .toPromise()
-        const generateModuleCurrencyApprovalData =
-          result.data.generateModuleCurrencyApprovalData
-
-        const tx = await sendTransactionAsync?.({
-          recklesslySetUnpreparedRequest: {
-            from: generateModuleCurrencyApprovalData.from,
-            to: generateModuleCurrencyApprovalData.to,
-            data: generateModuleCurrencyApprovalData.data,
-          },
-        })
-        await tx.wait()
+          await tx.wait()
+        }
       }
       await collectPost({ publicationId: note?.id })
       toast({
@@ -121,6 +161,7 @@ const NoteCollect = ({
         isLoading={isCollecting}
         icon={<BsCollection color="red" size="28" />}
         aria-label={''}
+        disabled={!isCollectable}
       />
     </Tooltip>
   )

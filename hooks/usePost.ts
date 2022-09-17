@@ -49,7 +49,7 @@ export const usePost = () => {
         deadline: typedData.value.deadline,
       },
     })
-    console.log(await tx.wait())
+    await tx.wait()
   }
 
   const collectPost = async (collectRequest: unknown) => {
@@ -80,7 +80,6 @@ export const usePost = () => {
         deadline: typedData.value.deadline,
       },
     })
-    console.log(tx.hash)
     await tx.wait()
   }
 

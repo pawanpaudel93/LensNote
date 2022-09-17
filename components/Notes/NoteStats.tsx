@@ -67,7 +67,17 @@ export default function NoteStats({
         <StatsCard
           title={'Mirrors'}
           stat={(note?.stats?.totalAmountOfMirrors ?? 0).toString()}
-          icon={<NoteMirror profile={profile} publicationId={note?.id} />}
+          icon={
+            <NoteMirror
+              profile={profile}
+              publicationId={note?.id}
+              isMirrorable={
+                (note?.referenceModule !== null &&
+                  note?.profile?.isFollowing) ||
+                note?.referenceModule === null
+              }
+            />
+          }
         />
         <StatsCard
           title={'Collects'}

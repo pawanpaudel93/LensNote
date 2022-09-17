@@ -145,7 +145,7 @@ const CreatePrivateNote: NextPage = () => {
   const onUnifiedAccessControlConditionsSelected = (shareModalOutput: any) => {
     metadata.accessControlConditions =
       shareModalOutput.unifiedAccessControlConditions
-    console.log(metadata)
+    setShowShareModal(false)
   }
 
   async function initTableland() {

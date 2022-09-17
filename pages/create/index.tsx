@@ -28,10 +28,7 @@ import {
 import { usePost } from '@/hooks/usePost'
 import { useAccount } from 'wagmi'
 import { APP_NAME, WMATIC_TOKEN_ADDRESS } from '@/constants'
-import {
-  CollectModules,
-  CommonFeeCollectModuleParams,
-} from '@/interfaces/publication'
+import { CollectModules, CommonFeeCollectModuleParams } from '@/interfaces'
 import 'md-editor-rt/lib/style.css'
 import useAppStore from '@/lib/store'
 import { getRPCErrorMessage } from '@/lib/parser'

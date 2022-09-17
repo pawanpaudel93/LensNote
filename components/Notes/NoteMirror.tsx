@@ -21,15 +21,17 @@ import {
   useToast,
   Text,
 } from '@chakra-ui/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { GoMirror } from 'react-icons/go'
 
 const NoteMirror = ({
   profile,
   publicationId,
+  isMirrorable,
 }: {
   profile: IProfile
   publicationId: string
+  isMirrorable: boolean
 }) => {
   const toast = useToast()
   const { createMirror } = usePost()
@@ -73,6 +75,7 @@ const NoteMirror = ({
           onClick={onToggle}
           icon={<GoMirror size="28" />}
           aria-label={''}
+          isDisabled={!isMirrorable}
         />
       </Tooltip>
       <Popover
