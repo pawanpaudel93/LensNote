@@ -68,8 +68,10 @@ export const usePost = () => {
     )
     const { v, r, s } = splitSignature(signature)
 
+    const address = await signer?.getAddress()
+
     const tx = await lensHub.collectWithSig({
-      collector: await signer?.getAddress(),
+      collector: address,
       profileId: typedData.value.profileId,
       pubId: typedData.value.pubId,
       data: typedData.value.data,

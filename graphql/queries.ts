@@ -237,6 +237,7 @@ export const GET_PROFILE_QUERY = `
           totalPublications
           totalCollects
         }
+        isFollowedByMe
         followModule {
           ... on FeeFollowModuleSettings {
             type

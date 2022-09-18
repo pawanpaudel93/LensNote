@@ -82,11 +82,10 @@ const NoteCollect = ({
             (allowanceModule) => allowanceModule.module === noteType
           )?.allowance ?? '0x00'
         )
+        const address = await signer?.getAddress()
         const collectPrice = parseFloat(note.collectModule.amount.value)
         const walletBalance = parseFloat(
-          ethers.utils.formatEther(
-            await wMatic.balanceOf(await signer?.getAddress())
-          )
+          ethers.utils.formatEther(await wMatic.balanceOf(address))
         )
 
         if (walletBalance < collectPrice) {

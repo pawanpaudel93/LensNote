@@ -16,14 +16,23 @@ import {
   Container,
   SkeletonText,
   VStack,
+  useToast,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
+import { useProfile } from '@/hooks/useProfile'
+import { getDefaultToastOptions } from '@/lib/utils'
+import useAppStore from '@/lib/store'
 
 const Profile: NextPage = () => {
   const client = useClient()
+  const toast = useToast()
   const [notes, setNotes] = useState<INote[]>([])
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
   const [fetching, setFetching] = useState(true)
+  const { follow, unfollow } = useProfile()
+  const [isLoading, setIsLoading] = useState(false)
+  const [isFollowing, setIsFollowing] = useState(false)
+  const signedProfile = useAppStore((state) => state.defaultProfile)
 
   const {
     query: { handle },
@@ -74,9 +83,38 @@ const Profile: NextPage = () => {
     }
   }
 
+  async function followOrUnfollowUser() {
+    try {
+      setIsLoading(true)
+      if (isFollowing) {
+        await unfollow(profile.id)
+        setIsFollowing(false)
+        toast({
+          title: 'Unfollow sucessful.',
+          ...getDefaultToastOptions('success'),
+        })
+      } else {
+        await follow({ follow: [{ profile: profile.id }] })
+        setIsFollowing(true)
+        toast({
+          title: 'Follow successful',
+          ...getDefaultToastOptions('success'),
+        })
+      }
+    } catch (error) {
+      console.log(error)
+      toast({
+        title: isFollowing ? 'Unfollow error.' : 'Follow error.',
+        ...getDefaultToastOptions('error'),
+      })
+    }
+    setIsLoading(false)
+  }
+
   useEffect(() => {
     if (profile?.id && notes.length === 0) {
       initialFetch()
+      setIsFollowing(profile?.isFollowedByMe === true ? true : false)
     }
   }, [profile?.id])
 
@@ -91,7 +129,7 @@ const Profile: NextPage = () => {
         ))}
     </Container>
   ) : (
-    <Container maxW="full" px={12}>
+    <Container maxW="full" px={{ base: 4, md: 12 }}>
       <Box position="relative" h="500px">
         <Box
           position="absolute"
@@ -196,22 +234,26 @@ const Profile: NextPage = () => {
                       </Text>
                     </Box>
                     <Box mr={{ lg: 4 }} p="3" textAlign="center">
-                      <Button
-                        rounded={'full'}
-                        bg={'blue.400'}
-                        color={'white'}
-                        boxShadow={
-                          '0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)'
-                        }
-                        _hover={{
-                          bg: 'blue.500',
-                        }}
-                        _focus={{
-                          bg: 'blue.500',
-                        }}
-                      >
-                        Follow
-                      </Button>
+                      {signedProfile?.handle === profile?.handle && (
+                        <Button
+                          rounded={'full'}
+                          bg={'blue.400'}
+                          color={'white'}
+                          boxShadow={
+                            '0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)'
+                          }
+                          _hover={{
+                            bg: 'blue.500',
+                          }}
+                          _focus={{
+                            bg: 'blue.500',
+                          }}
+                          isLoading={isLoading}
+                          onClick={followOrUnfollowUser}
+                        >
+                          {isFollowing ? 'Unfollow' : 'Follow'}
+                        </Button>
+                      )}
                     </Box>
                   </Flex>
                 </Box>

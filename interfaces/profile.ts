@@ -10,6 +10,7 @@ export interface IProfile {
   coverPicture: string | null
   ownedBy: string
   dispatcher: null
+  isFollowedByMe?: boolean
   stats: {
     totalFollowers: number
     totalFollowing: number
