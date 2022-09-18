@@ -2,7 +2,7 @@ import { useAccount, useSignMessage } from 'wagmi'
 import jwtDecode, { JwtPayload } from 'jwt-decode'
 import { useClient } from 'urql'
 import { JWT_KEY } from '@/constants'
-import { GET_CHALLENGE_QUERY, GET_PROFILE_QUERY } from '@/graphql/queries'
+import { GET_CHALLENGE_QUERY, GET_PROFILES_QUERY } from '@/graphql/queries'
 import { authenticateMutation } from '@/graphql/mutations'
 import useAppStore from '@/lib/store'
 import { IProfile } from '@/interfaces'
@@ -38,7 +38,7 @@ export const useLogin = () => {
   const setMyProfiles = async () => {
     try {
       const result = await client
-        .query(GET_PROFILE_QUERY, {
+        .query(GET_PROFILES_QUERY, {
           request: {
             ownedBy: [address],
           },

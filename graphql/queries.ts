@@ -86,7 +86,7 @@ export const GET_DEFAULT_PROFILE_QUERY = `
     }
   }
 `
-export const GET_PROFILE_QUERY = `
+export const GET_PROFILES_QUERY = `
 query($request: ProfileQueryRequest!) {
   profiles(request: $request) {
       items {
@@ -175,6 +175,91 @@ query($request: ProfileQueryRequest!) {
     }
   }
 }
+`
+
+export const GET_PROFILE_QUERY = `
+  query($request: SingleProfileQueryRequest!) {
+    profile(request: $request) {
+        id
+        name
+        bio
+        attributes {
+          displayType
+          traitType
+          key
+          value
+        }
+        followNftAddress
+        metadata
+        isDefault
+        picture {
+          ... on NftImage {
+            contractAddress
+            tokenId
+            uri
+            verified
+          }
+          ... on MediaSet {
+            original {
+              url
+              mimeType
+            }
+          }
+          __typename
+        }
+        handle
+        coverPicture {
+          ... on NftImage {
+            contractAddress
+            tokenId
+            uri
+            verified
+          }
+          ... on MediaSet {
+            original {
+              url
+              mimeType
+            }
+          }
+          __typename
+        }
+        ownedBy
+        dispatcher {
+          address
+          canUseRelay
+        }
+        stats {
+          totalFollowers
+          totalFollowing
+          totalPosts
+          totalComments
+          totalMirrors
+          totalPublications
+          totalCollects
+        }
+        followModule {
+          ... on FeeFollowModuleSettings {
+            type
+            amount {
+              asset {
+                symbol
+                name
+                decimals
+                address
+              }
+              value
+            }
+            recipient
+          }
+          ... on ProfileFollowModuleSettings {
+            type
+          }
+          ... on RevertFollowModuleSettings {
+            type
+          }
+        }
+    }
+  }
 `
 
 export const GET_PUBLICATIONS_QUERY = `
