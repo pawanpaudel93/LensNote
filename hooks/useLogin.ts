@@ -11,7 +11,7 @@ import { getRPCErrorMessage } from '@/lib/parser'
 import { getDefaultToastOptions } from '@/lib/utils'
 
 export const useLogin = () => {
-  const { address } = useAccount()
+  const { address, isConnected, isDisconnected } = useAccount()
   const { signMessageAsync } = useSignMessage()
   const client = useClient()
   const toast = useToast()
@@ -92,6 +92,9 @@ export const useLogin = () => {
   }
 
   return {
+    address,
+    isConnected,
+    isDisconnected,
     login,
     setMyProfiles,
   }

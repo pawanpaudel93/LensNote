@@ -14,12 +14,12 @@ import {
 import NextLink, { LinkProps } from 'next/link'
 import { HamburgerIcon, CloseIcon, SunIcon, MoonIcon } from '@chakra-ui/icons'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { useAccount } from 'wagmi'
 import { useLogin } from '@/hooks/useLogin'
 import { JWT_KEY } from '@/constants'
 import Logo from '@/components/Logo'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
+import jwtDecode from 'jwt-decode'
 
 interface NavItem {
   key: number
@@ -96,8 +96,7 @@ const NavLink = ({ href, children }: NavLinkProps) => {
 export default function NavBar() {
   const { colorMode, toggleColorMode } = useColorMode()
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { address, isConnected } = useAccount()
-  const { login, setMyProfiles } = useLogin()
+  const { login, setMyProfiles, address, isConnected } = useLogin()
 
   useEffect(() => {
     if (isConnected) {
@@ -105,6 +104,10 @@ export default function NavBar() {
       if (!jwt?.accessToken) {
         login()
       } else {
+        const jwtDecoded: { id: string } = jwtDecode(jwt?.accessToken)
+        if (jwtDecoded?.id !== address) {
+          login()
+        }
         setMyProfiles()
       }
     }
