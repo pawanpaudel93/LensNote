@@ -138,6 +138,7 @@ const Profile: NextPage = () => {
           backgroundPosition="center"
           backgroundSize="cover"
           backgroundImage={
+            profile?.coverPicture?.original?.url ??
             'https://images.unsplash.com/photo-1499336315816-097655dcfbda?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=2710&amp;q=80'
           }
         >
@@ -171,7 +172,7 @@ const Profile: NextPage = () => {
                     <Image
                       alt="background"
                       src={
-                        profile?.picture ??
+                        profile?.picture?.original?.url ??
                         `https://avatars.dicebear.com/api/pixel-art/${profile?.id}.svg`
                       }
                       bgColor="gray.200"

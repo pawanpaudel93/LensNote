@@ -1,3 +1,6 @@
+type Picture = {
+  original: { mimeType: null | string; url: string }
+}
 export interface IProfile {
   id: string
   name: string | null
@@ -5,9 +8,9 @@ export interface IProfile {
   attributes: []
   metadata: string | null
   isDefault: boolean
-  picture: string | null
+  picture: null | Picture
   handle: string
-  coverPicture: string | null
+  coverPicture: null | Picture
   ownedBy: string
   dispatcher: null
   isFollowedByMe?: boolean

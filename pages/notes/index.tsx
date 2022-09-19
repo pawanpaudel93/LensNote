@@ -85,7 +85,7 @@ const Notes: NextPage = () => {
           </Center>
         }
       >
-        <VStack spacing={2}>
+        <VStack spacing={4}>
           {notes.map((note, index) => (
             <NoteInfo key={index} note={note} isDetailPage={false} />
           ))}

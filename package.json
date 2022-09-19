@@ -23,6 +23,7 @@
     "ethers": "^5.7.1",
     "framer-motion": "^7.3.2",
     "graphql": "^16.5.0",
+    "humanize-duration": "^3.27.3",
     "jwt-decode": "^3.1.2",
     "lit-share-modal-v3": "^0.0.91",
     "md-editor-rt": "^2.2.1",
@@ -42,6 +43,7 @@
     "zustand": "^4.1.1"
   },
   "devDependencies": {
+    "@types/humanize-duration": "^3.27.1",
     "@types/node": "18.7.18",
     "@types/react": "18.0.20",
     "@types/react-dom": "18.0.6",

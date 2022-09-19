@@ -20,6 +20,7 @@ import Logo from '@/components/Logo'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import jwtDecode from 'jwt-decode'
+import SearchBar from './SearchBar'
 
 interface NavItem {
   key: number
@@ -135,7 +136,7 @@ export default function NavBar() {
                   </Text>
                 </Box>
               </NextLink>
-
+              <SearchBar />
               <HStack
                 as={'nav'}
                 spacing={4}

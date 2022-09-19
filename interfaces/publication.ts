@@ -160,6 +160,7 @@ export interface INote {
   __typename: 'Post' | 'Mirror'
   metadata: IMetadata
   id: string
+  createdAt: string
   hasCollectedByMe: boolean
   reaction: 'UPVOTE' | null
   stats: NoteStats

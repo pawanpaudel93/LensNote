@@ -1,8 +1,9 @@
 import { INote } from '@/interfaces'
-import { Stack, Button, Text, Tag, HStack } from '@chakra-ui/react'
+import { Stack, Button, Text, Tag, HStack, Link } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { GoMirror } from 'react-icons/go'
 import NoteStatsOnly from './NoteStatsOnly'
+import humanizeDuration from 'humanize-duration'
 
 export default function NoteInfo({
   note,
@@ -12,8 +13,25 @@ export default function NoteInfo({
   note: INote
 }) {
   const isMirrored = note?.mirrorOf ? true : false
+  const duration =
+    humanizeDuration(
+      new Date().getTime() - new Date(note?.createdAt ?? 0).getTime(),
+      { largest: 1 }
+    ) + ' ago'
   return (
-    <Stack p="4" boxShadow="lg" m="4" borderRadius="sm" minW="full">
+    <Stack
+      p="4"
+      boxShadow="lg"
+      borderRadius="sm"
+      borderWidth="1px"
+      borderColor="gray.300"
+      minW="full"
+      position="relative"
+      rounded="md"
+    >
+      <Text position="absolute" right="5" fontSize="sm">
+        {duration}
+      </Text>
       <Stack direction="column" alignItems="start">
         {isMirrored && (
           <HStack>
@@ -45,7 +63,13 @@ export default function NoteInfo({
       <Text>
         <b>Note By</b>:{' '}
         <Tag>
-          {isMirrored ? note?.mirrorOf?.profile?.handle : note?.profile?.handle}
+          <NextLink passHref href={`/${note?.profile?.handle}`}>
+            <Link>
+              {isMirrored
+                ? note?.mirrorOf?.profile?.handle
+                : note?.profile?.handle}
+            </Link>
+          </NextLink>
         </Tag>
       </Text>
     </Stack>
