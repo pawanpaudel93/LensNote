@@ -180,7 +180,15 @@ const CreatePrivateNote: NextPage = () => {
   }
 
   return (
-    <Container maxW="full" px={12}>
+    <Container
+      maxW="full"
+      px={12}
+      borderWidth="1px"
+      borderRadius="lg"
+      w={{ sm: '100%', md: '98%' }}
+      boxShadow={'2xl'}
+      padding={4}
+    >
       <form onSubmit={onSubmit}>
         <VStack spacing={2}>
           <FormControl isRequired>

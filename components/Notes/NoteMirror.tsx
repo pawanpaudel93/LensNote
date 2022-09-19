@@ -21,8 +21,8 @@ import {
   useToast,
   Text,
 } from '@chakra-ui/react'
-import { useEffect, useState } from 'react'
-import { GoMirror } from 'react-icons/go'
+import { useState } from 'react'
+import { BsArrowLeftRight } from 'react-icons/bs'
 
 const NoteMirror = ({
   profile,
@@ -73,7 +73,7 @@ const NoteMirror = ({
       >
         <IconButton
           onClick={onToggle}
-          icon={<GoMirror size="28" />}
+          icon={<BsArrowLeftRight size="28" />}
           aria-label={''}
           isDisabled={!isMirrorable}
         />

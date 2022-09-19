@@ -1,9 +1,8 @@
 import { NoteStats } from '@/interfaces'
 import { Box, HStack, Tooltip } from '@chakra-ui/react'
 import { ReactNode } from 'react'
-import { BsCollection, BsHeart } from 'react-icons/bs'
+import { BsArrowLeftRight, BsCollection, BsHeart } from 'react-icons/bs'
 import { FaComment } from 'react-icons/fa'
-import { GoMirror } from 'react-icons/go'
 
 interface StatsCardProps {
   title: string
@@ -29,7 +28,7 @@ export default function NoteStatsOnly({ stats }: { stats: NoteStats }) {
         <StatsCard
           title={'Mirrors'}
           stat={(stats?.totalAmountOfMirrors ?? 0).toString()}
-          icon={<GoMirror size={'1.2em'} />}
+          icon={<BsArrowLeftRight size={'1.2em'} />}
         />
         <StatsCard
           title={'Collects'}
