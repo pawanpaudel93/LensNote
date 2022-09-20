@@ -1,5 +1,13 @@
 import { IPrivateMetadata, IProfile } from '@/interfaces'
-import { Avatar, HStack, Link, Stack, Text, VStack } from '@chakra-ui/react'
+import {
+  Avatar,
+  HStack,
+  Link,
+  Stack,
+  Text,
+  useColorMode,
+  VStack,
+} from '@chakra-ui/react'
 import humanizeDuration from 'humanize-duration'
 import NextLink from 'next/link'
 
@@ -15,6 +23,7 @@ export default function PrivateNoteInfo({
       new Date().getTime() - new Date(note?.createdAt ?? 0).getTime(),
       { largest: 1 }
     ) + ' ago'
+  const { colorMode } = useColorMode()
   return (
     <NextLink passHref href={'/notes/private/' + note.id}>
       <VStack
@@ -28,11 +37,11 @@ export default function PrivateNoteInfo({
         position="relative"
         rounded="md"
         _hover={{
-          bg: 'gray.100',
+          bg: colorMode === 'light' ? 'gray.100' : 'gray.700',
           cursor: 'pointer',
         }}
         _focus={{
-          bg: 'gray.100',
+          bg: colorMode === 'light' ? 'gray.100' : 'gray.700',
         }}
       >
         <HStack w="100%">

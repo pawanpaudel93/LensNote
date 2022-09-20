@@ -47,7 +47,7 @@ export default function MyProfile({ profile }: { profile: IProfile }) {
             size={'xl'}
             src={
               profile.picture?.original.url ??
-              `https://avatars.dicebear.com/api/avataaars/${profile.id}.svg`
+              `https://avatars.dicebear.com/api/pixel-art/${profile?.id}.svg`
             }
             css={{
               border: '2px solid white',

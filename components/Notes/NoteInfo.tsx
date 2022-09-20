@@ -1,5 +1,13 @@
 import { INote } from '@/interfaces'
-import { Stack, Text, HStack, Link, Avatar, VStack } from '@chakra-ui/react'
+import {
+  Stack,
+  Text,
+  HStack,
+  Link,
+  Avatar,
+  VStack,
+  useColorMode,
+} from '@chakra-ui/react'
 import NextLink from 'next/link'
 import NoteStatsOnly from './NoteStatsOnly'
 import humanizeDuration from 'humanize-duration'
@@ -12,6 +20,7 @@ export default function NoteInfo({
   isDetailPage: boolean
   note: INote
 }) {
+  const { colorMode } = useColorMode()
   const isMirrored = note?.mirrorOf ? true : false
   const duration =
     humanizeDuration(
@@ -31,11 +40,11 @@ export default function NoteInfo({
         position="relative"
         rounded="md"
         _hover={{
-          bg: 'gray.100',
+          bg: colorMode === 'light' ? 'gray.100' : 'gray.700',
           cursor: 'pointer',
         }}
         _focus={{
-          bg: 'gray.100',
+          bg: colorMode === 'light' ? 'gray.100' : 'gray.700',
         }}
         align="start"
       >

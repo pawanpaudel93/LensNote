@@ -1,5 +1,4 @@
 import React, { FC, ReactNode } from 'react'
-import { ChakraProvider } from '@chakra-ui/react'
 import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { chain, configureChains, createClient, WagmiConfig } from 'wagmi'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
@@ -7,7 +6,7 @@ import { publicProvider } from 'wagmi/providers/public'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import jwtDecode, { JwtPayload } from 'jwt-decode'
 import NextNProgress from 'nextjs-progressbar'
-import Header from '@/components/Navigation/Header'
+import Header from '@/components/Navigation/NavBar'
 import {
   dedupExchange,
   cacheExchange,
@@ -19,9 +18,11 @@ import { withUrqlClient } from 'next-urql'
 import { refreshMutation } from '@/graphql/mutations'
 import { JWT_KEY } from '@/constants'
 import { Footer } from '@/components/Navigation/Footer'
+import { Chakra } from '@/components/Chakra'
 
 interface Props {
   children: ReactNode
+  pageProps: any
 }
 
 const { chains, provider } = configureChains(
@@ -61,18 +62,18 @@ export interface AuthState {
   expiry?: number
 }
 
-const Layout: FC<Props> = ({ children }) => {
+const Layout: FC<Props> = ({ children, pageProps }) => {
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains}>
-        <ChakraProvider>
+        <Chakra cookies={pageProps.cookies}>
           <Header />
           <NextNProgress />
           <div style={{ marginTop: '70px', minHeight: 'calc(100vh - 70px)' }}>
             {children}
           </div>
           <Footer />
-        </ChakraProvider>
+        </Chakra>
       </RainbowKitProvider>
     </WagmiConfig>
   )
@@ -184,3 +185,5 @@ export default withUrqlClient((ssrExchange) => ({
     fetchExchange,
   ],
 }))(Layout)
+
+export { getServerSideProps } from '@/components/Chakra'
