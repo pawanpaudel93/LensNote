@@ -32,6 +32,8 @@ import { JWT_KEY } from '@/constants'
 import jwtDecode from 'jwt-decode'
 import { useEffect } from 'react'
 import SearchBar from './SearchBar'
+import useAppStore from '@/lib/store'
+import { IProfile } from '@/interfaces'
 
 interface NavLinkProps extends LinkProps {
   children?: string | React.ReactNode
@@ -43,11 +45,13 @@ interface NavItem {
   subLabel?: string
   children?: Array<NavItem>
   href?: string
+  authentication?: boolean
 }
 
 const NAV_ITEMS: Array<NavItem> = [
   {
     label: 'My Notes',
+    authentication: true,
     children: [
       {
         label: 'Public Notes',
@@ -63,6 +67,7 @@ const NAV_ITEMS: Array<NavItem> = [
   },
   {
     label: 'Create Note',
+    authentication: true,
     children: [
       {
         label: 'Public Note',
@@ -79,6 +84,7 @@ const NAV_ITEMS: Array<NavItem> = [
   {
     label: 'My Profiles',
     href: '/my-profiles',
+    authentication: true,
   },
 ]
 
@@ -86,6 +92,7 @@ export default function NavBar() {
   const { colorMode, toggleColorMode } = useColorMode()
   const { isOpen, onToggle } = useDisclosure()
   const { login, setMyProfiles, address, isConnected } = useLogin()
+  const profile = useAppStore((state) => state.defaultProfile)
 
   useEffect(() => {
     if (isConnected) {
@@ -135,11 +142,7 @@ export default function NavBar() {
             aria-label={'Toggle Navigation'}
           />
         </Flex>
-        <Flex
-          flex={{ base: 1 }}
-          justify={{ base: 'center', md: 'start' }}
-          align="center"
-        >
+        <Flex justify={{ base: 'center', md: 'start' }} align="center">
           <NextLink href="/" passHref>
             <Box cursor="pointer" mr={4}>
               <Logo />
@@ -152,12 +155,12 @@ export default function NavBar() {
           <SearchBar />
 
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-            <DesktopNav />
+            <DesktopNav profile={profile} isConnected={isConnected} />
           </Flex>
         </Flex>
 
         <Stack
-          flex={{ base: 1, md: 0 }}
+          flex={{ base: 1, md: 1 }}
           justify={'flex-end'}
           align="center"
           direction={'row'}
@@ -171,7 +174,7 @@ export default function NavBar() {
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
-        <MobileNav />
+        <MobileNav profile={profile} isConnected={isConnected} />
       </Collapse>
     </Box>
   )
@@ -180,8 +183,9 @@ export default function NavBar() {
 const NavLink = ({ href, children }: NavLinkProps) => {
   const router = useRouter()
   const isActive = router.pathname === href
-  const color = useColorModeValue('#0E76FD', 'selected')
-  const bg = useColorModeValue('gray.200', 'gray.700')
+  const color = useColorModeValue('green', 'selected')
+
+  const linkHoverColor = useColorModeValue('gray.800', 'white')
   if (isActive) {
     return (
       <NextLink href={href} passHref>
@@ -193,7 +197,7 @@ const NavLink = ({ href, children }: NavLinkProps) => {
           rounded={'md'}
           _hover={{
             textDecoration: 'none',
-            bg,
+            color: 'green.500',
           }}
           border="1px solid"
         >
@@ -211,7 +215,7 @@ const NavLink = ({ href, children }: NavLinkProps) => {
         rounded={'md'}
         _hover={{
           textDecoration: 'none',
-          bg,
+          color: linkHoverColor,
         }}
       >
         {children}
@@ -220,14 +224,22 @@ const NavLink = ({ href, children }: NavLinkProps) => {
   )
 }
 
-const DesktopNav = () => {
+const DesktopNav = ({
+  profile,
+  isConnected,
+}: {
+  profile: IProfile | null
+  isConnected: boolean
+}) => {
   const linkColor = useColorModeValue('gray.600', 'gray.200')
   const linkHoverColor = useColorModeValue('gray.800', 'white')
   const popoverContentBgColor = useColorModeValue('white', 'gray.800')
 
   return (
     <Stack direction={'row'} spacing={4} align="center">
-      {NAV_ITEMS.map((navItem) => (
+      {NAV_ITEMS.filter(
+        (navItem) => navItem.authentication && profile?.id && isConnected
+      ).map((navItem) => (
         <Box key={navItem.label}>
           <Popover trigger={'hover'} placement={'bottom-start'}>
             {navItem?.href ? (
@@ -312,7 +324,13 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   )
 }
 
-const MobileNav = () => {
+const MobileNav = ({
+  profile,
+  isConnected,
+}: {
+  profile: IProfile | null
+  isConnected: boolean
+}) => {
   return (
     <Stack
       bg={useColorModeValue('white', 'gray.800')}
@@ -325,7 +343,9 @@ const MobileNav = () => {
       top={-1}
       zIndex={1000}
     >
-      {NAV_ITEMS.map((navItem) => (
+      {NAV_ITEMS.filter(
+        (navItem) => navItem.authentication && profile?.id && isConnected
+      ).map((navItem) => (
         <MobileNavItem key={navItem.label} {...navItem} />
       ))}
     </Stack>
