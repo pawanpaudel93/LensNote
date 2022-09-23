@@ -27,8 +27,9 @@ export default function NoteInfo({
       new Date().getTime() - new Date(note?.createdAt ?? 0).getTime(),
       { largest: 1 }
     ) + ' ago'
-  return (
-    <NextLink passHref href={'/notes/' + note?.id}>
+
+  const NoteInfoComponent = () => {
+    return (
       <VStack
         p="4"
         mt={3}
@@ -41,7 +42,7 @@ export default function NoteInfo({
         rounded="md"
         _hover={{
           bg: colorMode === 'light' ? 'gray.100' : 'gray.700',
-          cursor: 'pointer',
+          cursor: isDetailPage ? 'cursor' : 'pointer',
         }}
         _focus={{
           bg: colorMode === 'light' ? 'gray.100' : 'gray.700',
@@ -98,6 +99,14 @@ export default function NoteInfo({
           </Stack>
         </HStack>
       </VStack>
+    )
+  }
+
+  return isDetailPage ? (
+    <NoteInfoComponent />
+  ) : (
+    <NextLink passHref href={'/notes/' + note?.id}>
+      <NoteInfoComponent />
     </NextLink>
   )
 }
