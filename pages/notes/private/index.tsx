@@ -49,7 +49,12 @@ const PrivateNotes: NextPage = () => {
     <Container maxW="full" px={12}>
       <VStack spacing={4}>
         {notes.map((note, index) => (
-          <PrivateNoteInfo key={index} note={note} profile={profile} />
+          <PrivateNoteInfo
+            key={index}
+            note={note}
+            profile={profile}
+            isDetailPage={false}
+          />
         ))}
       </VStack>
     </Container>

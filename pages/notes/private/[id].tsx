@@ -9,10 +9,12 @@ import { IPrivateMetadata } from '@/interfaces'
 import { TABLELAND_NOTE_TABLE } from '@/constants'
 import { Connection, connect, resultsToObjects } from '@tableland/sdk'
 import lit from '@/lib/lit'
+import useAppStore from '@/lib/store'
 
 let tableland: Connection
 const PrivateNote: NextPage = () => {
   const [isLoading, setIsLoading] = useState(true)
+  const profile = useAppStore((state) => state.defaultProfile)
 
   const {
     query: { id },
@@ -72,7 +74,11 @@ const PrivateNote: NextPage = () => {
   return (
     <Container maxW="full" px={12}>
       <SkeletonText noOfLines={4} spacing="4" isLoaded={!isLoading}>
-        <PrivateNoteInfo note={note as IPrivateMetadata} isDetailPage />
+        <PrivateNoteInfo
+          note={note as IPrivateMetadata}
+          isDetailPage
+          profile={profile}
+        />
         <Box p="4" boxShadow="lg" m="4" borderRadius="sm">
           <MdEditor
             modelValue={note?.content as string}

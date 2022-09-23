@@ -14,9 +14,11 @@ import NextLink from 'next/link'
 export default function PrivateNoteInfo({
   note,
   profile,
+  isDetailPage,
 }: {
   profile: IProfile | null
   note: IPrivateMetadata
+  isDetailPage: boolean
 }) {
   const duration =
     humanizeDuration(
@@ -24,8 +26,9 @@ export default function PrivateNoteInfo({
       { largest: 1 }
     ) + ' ago'
   const { colorMode } = useColorMode()
-  return (
-    <NextLink passHref href={'/notes/private/' + note.id}>
+
+  const PtivateNoteComponent = () => {
+    return (
       <VStack
         p="4"
         mt={3}
@@ -38,7 +41,7 @@ export default function PrivateNoteInfo({
         rounded="md"
         _hover={{
           bg: colorMode === 'light' ? 'gray.100' : 'gray.700',
-          cursor: 'pointer',
+          cursor: isDetailPage ? 'cursor' : 'pointer',
         }}
         _focus={{
           bg: colorMode === 'light' ? 'gray.100' : 'gray.700',
@@ -58,10 +61,7 @@ export default function PrivateNoteInfo({
           </NextLink>
 
           <Stack w="100%" position="relative" rounded="md">
-            <Stack
-              direction={{ base: 'row', md: 'column' }}
-              justifyContent="space-between"
-            >
+            <VStack align="start">
               <HStack>
                 <Text fontWeight="semibold">{note?.title}</Text>
                 <Text position="absolute" right="5" fontSize="sm">
@@ -71,10 +71,18 @@ export default function PrivateNoteInfo({
               <Text fontSize={{ base: 'sm' }} textAlign={'left'} maxW={'4xl'}>
                 {note?.description}
               </Text>
-            </Stack>
+            </VStack>
           </Stack>
         </HStack>
       </VStack>
+    )
+  }
+
+  return isDetailPage ? (
+    <PtivateNoteComponent />
+  ) : (
+    <NextLink passHref href={'/notes/private/' + note.id}>
+      <PtivateNoteComponent />
     </NextLink>
   )
 }

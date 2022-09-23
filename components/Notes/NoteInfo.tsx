@@ -28,7 +28,7 @@ export default function NoteInfo({
       { largest: 1 }
     ) + ' ago'
 
-  const NoteInfoComponent = () => {
+  const NoteComponent = () => {
     return (
       <VStack
         p="4"
@@ -103,10 +103,10 @@ export default function NoteInfo({
   }
 
   return isDetailPage ? (
-    <NoteInfoComponent />
+    <NoteComponent />
   ) : (
     <NextLink passHref href={'/notes/' + note?.id}>
-      <NoteInfoComponent />
+      <NoteComponent />
     </NextLink>
   )
 }
