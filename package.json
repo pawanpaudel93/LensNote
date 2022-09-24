@@ -27,7 +27,7 @@
     "graphql": "^16.5.0",
     "humanize-duration": "^3.27.3",
     "jwt-decode": "^3.1.2",
-    "lit-share-modal-v3": "^0.0.91",
+    "lit-share-modal-v3": "^0.0.92",
     "md-editor-rt": "^2.2.1",
     "next": "12.3.0",
     "next-urql": "^4.0.0",
