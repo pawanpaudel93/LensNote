@@ -36,7 +36,7 @@ if (!globalThis.fetch) {
   // Create a new table with a supplied SQL schema and optional `prefix`
   // @return {Connection} Connection object, including the table's `name`
   const { name } = await tableland.create(
-    `id text primary key, title text, description text, content text, contentId text, tags text, lensId text, encryptedSymmetricKey text, accessControlConditions text, createdAt int, updatedAt int`,
+    `id text primary key, title text, description text, content text, contentId text, tags text, lensId text, encryptedSymmetricKey text, accessControlConditions text, isPublished int, createdAt int, updatedAt int`,
     { prefix: `note` } // Optional prefix; used to define a human-readable string
   )
 

@@ -81,7 +81,6 @@ const CreatePrivateNote: NextPage = () => {
           ...getDefaultToastOptions('error'),
         })
       }
-      await lit.connect()
       const { encryptedString, encryptedSymmetricKey } = await lit.encrypt(
         metadata.content,
         metadata.accessControlConditions
@@ -102,7 +101,7 @@ const CreatePrivateNote: NextPage = () => {
         const responseJSON = await response.json()
         const contentID = responseJSON.contentID
         const writeRes = await tableland.write(
-          `insert into ${TABLELAND_NOTE_TABLE} (id, title, description, content, contentId, tags, lensId, encryptedSymmetricKey, accessControlConditions, createdAt, updatedAt) values (
+          `insert into ${TABLELAND_NOTE_TABLE} (id, title, description, content, contentId, tags, lensId, encryptedSymmetricKey, accessControlConditions, isPublished, createdAt, updatedAt) values (
             '${uuidv4()}',
             '${metadata.title}', '${
             metadata.description
@@ -110,13 +109,13 @@ const CreatePrivateNote: NextPage = () => {
             profile?.id
           }, '${encryptedSymmetricKey}', '${JSON.stringify(
             metadata.accessControlConditions
-          )}', ${metadata.createdAt}, ${metadata.updatedAt}
+          )}', 0, ${metadata.createdAt}, ${metadata.updatedAt}
           )`
         )
         console.log(writeRes)
       } else {
         const writeRes = await tableland.write(
-          `insert into ${TABLELAND_NOTE_TABLE} (id, title, description, content, contentId, tags, lensId, encryptedSymmetricKey, accessControlConditions, createdAt, updatedAt) values (
+          `insert into ${TABLELAND_NOTE_TABLE} (id, title, description, content, contentId, tags, lensId, encryptedSymmetricKey, accessControlConditions, isPublished, createdAt, updatedAt) values (
             '${uuidv4()}',
             '${metadata.title}', '${
             metadata.description
@@ -124,7 +123,7 @@ const CreatePrivateNote: NextPage = () => {
             profile?.id
           }', '${encryptedSymmetricKey}', '${JSON.stringify(
             metadata.accessControlConditions
-          )}', ${metadata.createdAt}, ${metadata.updatedAt}
+          )}', 0, ${metadata.createdAt}, ${metadata.updatedAt}
           )`
         )
         console.log(writeRes)
@@ -224,6 +223,9 @@ const CreatePrivateNote: NextPage = () => {
               language="en-US"
               modelValue={metadata.content as string}
               toolbarsExclude={toolbarsExclude}
+              style={{
+                padding: '25px',
+              }}
               onChange={(v: string) => {
                 setMetadata({
                   ...metadata,
@@ -231,6 +233,8 @@ const CreatePrivateNote: NextPage = () => {
                 })
               }}
               theme={colorMode}
+              previewTheme="github"
+              codeTheme="github"
             />
           </FormControl>
           <FormControl>

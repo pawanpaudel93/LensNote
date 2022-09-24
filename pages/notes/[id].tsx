@@ -72,6 +72,8 @@ const Note: NextPage = () => {
             language="en-US"
             theme={colorMode}
             previewOnly
+            previewTheme="github"
+            codeTheme="github"
           />
         </Box>
       </SkeletonText>

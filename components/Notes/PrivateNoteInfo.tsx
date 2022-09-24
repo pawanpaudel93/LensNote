@@ -27,8 +27,8 @@ export default function PrivateNoteInfo({
     ) + ' ago'
   const { colorMode } = useColorMode()
 
-  const PtivateNoteComponent = () => {
-    return (
+  return (
+    <NextLink passHref href={'/notes/private/' + note.id}>
       <VStack
         p="4"
         mt={3}
@@ -75,14 +75,6 @@ export default function PrivateNoteInfo({
           </Stack>
         </HStack>
       </VStack>
-    )
-  }
-
-  return isDetailPage ? (
-    <PtivateNoteComponent />
-  ) : (
-    <NextLink passHref href={'/notes/private/' + note.id}>
-      <PtivateNoteComponent />
     </NextLink>
   )
 }

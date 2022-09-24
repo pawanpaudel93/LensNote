@@ -7,7 +7,7 @@ import {
   useColorModeValue,
   VisuallyHidden,
 } from '@chakra-ui/react'
-import { FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa'
+import { FaGithub, FaTwitter, FaYoutube } from 'react-icons/fa'
 import { ReactNode } from 'react'
 import Logo from '@/components/Logo'
 import NextLink from 'next/link'
@@ -37,6 +37,7 @@ const SocialButton = ({
       _hover={{
         bg: useColorModeValue('blackAlpha.200', 'whiteAlpha.200'),
       }}
+      target="blank"
     >
       <VisuallyHidden>{label}</VisuallyHidden>
       {children}
@@ -75,8 +76,11 @@ export function Footer() {
           <SocialButton label={'YouTube'} href={'#'}>
             <FaYoutube />
           </SocialButton>
-          <SocialButton label={'Instagram'} href={'#'}>
-            <FaInstagram />
+          <SocialButton
+            label={'Github'}
+            href={'https://github.com/pawanpaudel93/LensNote'}
+          >
+            <FaGithub />
           </SocialButton>
         </Stack>
       </Container>

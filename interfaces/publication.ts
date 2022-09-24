@@ -189,6 +189,7 @@ export interface IPrivateMetadata {
   contentId: string
   encryptedSymmetricKey: string
   accessControlConditions: object
+  isPublished: number
   createdAt: number
   updatedAt: number
 }

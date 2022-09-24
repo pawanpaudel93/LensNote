@@ -185,7 +185,7 @@ const NavLink = ({ href, children }: NavLinkProps) => {
   const isActive = router.pathname === href
   const color = useColorModeValue('green', 'selected')
 
-  const linkHoverColor = useColorModeValue('gray.800', 'white')
+  const linkHoverColor = useColorModeValue('green.800', 'white')
   if (isActive) {
     return (
       <NextLink href={href} passHref>
@@ -232,7 +232,7 @@ const DesktopNav = ({
   isConnected: boolean
 }) => {
   const linkColor = useColorModeValue('gray.600', 'gray.200')
-  const linkHoverColor = useColorModeValue('gray.800', 'white')
+  const linkHoverColor = useColorModeValue('green.800', 'white')
   const popoverContentBgColor = useColorModeValue('white', 'gray.800')
 
   return (

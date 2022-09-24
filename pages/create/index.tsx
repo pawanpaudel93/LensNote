@@ -389,7 +389,12 @@ const CreateNote: NextPage = () => {
               onChange={(v: string) => {
                 setMetadata({ ...metadata, content: v })
               }}
+              style={{
+                padding: '25px',
+              }}
               theme={colorMode}
+              previewTheme="github"
+              codeTheme="github"
             />
           </FormControl>
           <FormControl>

@@ -1,6 +1,7 @@
 import LitJsSdk from '@lit-protocol/sdk-browser'
 
 const chain = 'mumbai'
+const client = new LitJsSdk.LitNodeClient({ debug: false })
 
 const hexStringToArrayBuffer = (hexString: string) => {
   hexString = hexString.replace(/^0x/, '')
@@ -31,14 +32,11 @@ function hexdump(buf: ArrayBuffer) {
 }
 
 class Lit {
-  private litNodeClient
-
-  constructor() {
-    this.litNodeClient = new LitJsSdk.LitNodeClient({ debug: false })
-  }
+  private litNodeClient: any
 
   async connect() {
-    await this.litNodeClient.connect()
+    await client.connect()
+    this.litNodeClient = client
   }
 
   async encrypt(message: string, accessControlConditions: object) {
