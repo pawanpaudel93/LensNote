@@ -84,11 +84,10 @@ const NoteCollect = ({
         )
         const address = await signer?.getAddress()
         const collectPrice = parseFloat(note.collectModule.amount.value)
-        const walletBalance = parseFloat(
-          ethers.utils.formatEther(await wMatic.balanceOf(address))
-        )
+        const balance = await wMatic.balanceOf(address)
+        const wMaticBalance = parseFloat(ethers.utils.formatEther(balance))
 
-        if (walletBalance < collectPrice) {
+        if (wMaticBalance < collectPrice) {
           toast({
             title: 'Low wMATIC balance',
             description: 'Trying to convert the required wMATIC from MATIC.',
@@ -96,7 +95,7 @@ const NoteCollect = ({
           })
           const tx = await wMatic.deposit({
             value: ethers.utils.parseEther(
-              (collectPrice - walletBalance).toFixed(18).toString()
+              (collectPrice - wMaticBalance).toFixed(18).toString()
             ),
           })
           await tx.wait()
