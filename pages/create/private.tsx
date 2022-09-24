@@ -22,7 +22,7 @@ import 'md-editor-rt/lib/style.css'
 import lit from '@/lib/lit'
 import { TABLELAND_NOTE_TABLE } from '@/constants'
 import useAppStore from '@/lib/store'
-import { IProfile } from '@/interfaces'
+import { IProfile } from '@/types'
 import { getErrorMessage, getRPCErrorMessage } from '@/lib/parser'
 import { getDefaultToastOptions } from '@/lib/utils'
 import { SettingsIcon } from '@chakra-ui/icons'
@@ -40,8 +40,10 @@ const CreatePrivateNote: NextPage = () => {
   const profile = useAppStore((store) => store.defaultProfile) as IProfile
   const [showShareModal, setShowShareModal] = useState(false)
   const toolbarsExclude: ToolbarNames[] = ['github']
-  const metadata = usePersistStore((state) => state.privateNote)
-  const setMetadata = usePersistStore((state) => state.setPrivateNote)
+  const [metadata, setMetadata] = usePersistStore((state) => [
+    state.privateNote,
+    state.setPrivateNote,
+  ])
 
   const selectProps = useChakraSelectProps({
     placeholder: 'Tags...',
@@ -102,42 +104,75 @@ const CreatePrivateNote: NextPage = () => {
         })
         const responseJSON = await response.json()
         const contentID = responseJSON.contentID
-        const writeRes = await tableland.write(
-          `insert into ${TABLELAND_NOTE_TABLE} (id, title, description, content, contentId, tags, lensId, encryptedSymmetricKey, accessControlConditions, isPublished, createdAt, updatedAt) values (
+        if (metadata?.id) {
+          const updateRes = await tableland.write(
+            `update ${TABLELAND_NOTE_TABLE} set title='${
+              metadata.title
+            }', description='${
+              metadata.description
+            }', content='', contentId='${contentID}', tags='${
+              metadata.tags
+            }', encryptedSymmetricKey='${encryptedSymmetricKey}', accessControlConditions='${JSON.stringify(
+              metadata.accessControlConditions
+            )}', updatedAt=${new Date().getTime()} where id='${metadata.id}'`
+          )
+          console.log(updateRes)
+        } else {
+          const writeRes = await tableland.write(
+            `insert into ${TABLELAND_NOTE_TABLE} (id, title, description, content, contentId, tags, lensId, encryptedSymmetricKey, accessControlConditions, isPublished, createdAt, updatedAt) values (
             '${uuidv4()}',
             '${metadata.title}', '${
-            metadata.description
-          }', '', '${contentID}', '${metadata.tags}', ${
-            profile?.id
-          }, '${encryptedSymmetricKey}', '${JSON.stringify(
-            metadata.accessControlConditions
-          )}', 0, ${metadata.createdAt}, ${metadata.updatedAt}
+              metadata.description
+            }', '', '${contentID}', '${metadata.tags}', ${
+              profile?.id
+            }, '${encryptedSymmetricKey}', '${JSON.stringify(
+              metadata.accessControlConditions
+            )}', 0, ${metadata.createdAt}, ${metadata.updatedAt}
           )`
-        )
-        console.log(writeRes)
+          )
+          console.log(writeRes)
+        }
       } else {
-        const writeRes = await tableland.write(
-          `insert into ${TABLELAND_NOTE_TABLE} (id, title, description, content, contentId, tags, lensId, encryptedSymmetricKey, accessControlConditions, isPublished, createdAt, updatedAt) values (
+        if (metadata?.id) {
+          const updateRes = await tableland.write(
+            `update ${TABLELAND_NOTE_TABLE} set title='${
+              metadata.title
+            }', description='${
+              metadata.description
+            }', content='${encryptedString}', contentId='', tags='${
+              metadata.tags
+            }', encryptedSymmetricKey='${encryptedSymmetricKey}', accessControlConditions='${JSON.stringify(
+              metadata.accessControlConditions
+            )}', updatedAt=${new Date().getTime()} where id='${metadata.id}'`
+          )
+          console.log(updateRes)
+        } else {
+          const writeRes = await tableland.write(
+            `insert into ${TABLELAND_NOTE_TABLE} (id, title, description, content, contentId, tags, lensId, encryptedSymmetricKey, accessControlConditions, isPublished, createdAt, updatedAt) values (
             '${uuidv4()}',
             '${metadata.title}', '${
-            metadata.description
-          }', '${encryptedString}', '', '${metadata.tags}', '${
-            profile?.id
-          }', '${encryptedSymmetricKey}', '${JSON.stringify(
-            metadata.accessControlConditions
-          )}', 0, ${metadata.createdAt}, ${metadata.updatedAt}
+              metadata.description
+            }', '${encryptedString}', '', '${metadata.tags}', '${
+              profile?.id
+            }', '${encryptedSymmetricKey}', '${JSON.stringify(
+              metadata.accessControlConditions
+            )}', 0, ${metadata.createdAt}, ${metadata.updatedAt}
           )`
-        )
-        console.log(writeRes)
+          )
+          console.log(writeRes)
+        }
       }
       toast({
-        title: 'Note created.',
-        description: 'Note has been created sucessfully.',
+        title: profile?.id ? 'Note Updated' : 'Note created.',
+        description: `Note has been ${
+          profile?.id ? 'updated' : 'created'
+        } sucessfully.`,
         ...getDefaultToastOptions('success'),
       })
     } catch (error) {
+      console.log(error)
       toast({
-        title: 'Note creation error.',
+        title: `Note ${metadata?.id ? 'update' : 'creation'} error.`,
         description: getRPCErrorMessage(error),
         ...getDefaultToastOptions('error'),
       })
@@ -165,10 +200,6 @@ const CreatePrivateNote: NextPage = () => {
   ) => {
     try {
       setIsUploading(true)
-      toast({
-        title: 'Uploading Image/s',
-        ...getDefaultToastOptions('loading'),
-      })
       const res = await Promise.all(
         files.map((file) => {
           return new Promise((rev, rej) => {
@@ -335,7 +366,7 @@ const CreatePrivateNote: NextPage = () => {
           </div>
           <Center>
             <Button type="submit" colorScheme="blue" isLoading={isLoading}>
-              Create Note
+              {profile?.id ? 'Update Note' : 'Create Note'}
             </Button>
           </Center>
         </VStack>

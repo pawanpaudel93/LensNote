@@ -1,5 +1,5 @@
 import create from 'zustand'
-import { IProfile } from '@/interfaces'
+import { IProfile } from '@/types'
 
 interface AppState {
   defaultProfile: IProfile | null

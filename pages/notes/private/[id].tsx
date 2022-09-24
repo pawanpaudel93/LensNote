@@ -11,12 +11,13 @@ import {
   Button,
   Center,
   Container,
+  HStack,
   SkeletonText,
   useColorMode,
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import PrivateNoteInfo from '@/components/Notes/PrivateNoteInfo'
-import { IPrivateMetadata } from '@/interfaces'
+import { IPrivateMetadata } from '@/types'
 import { TABLELAND_NOTE_TABLE } from '@/constants'
 import { Connection, connect, resultsToObjects } from '@tableland/sdk'
 import lit from '@/lib/lit'
@@ -28,8 +29,14 @@ const PrivateNote: NextPage = () => {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
   const [isAuthorized, setIsAuthorized] = useState(true)
-  const setPublicNote = usePersistStore((state) => state.setPublicNote)
-  const publicNote = usePersistStore((state) => state.publicNote)
+  const [publicNote, setPublicNote] = usePersistStore((state) => [
+    state.publicNote,
+    state.setPublicNote,
+  ])
+  const [privateNote, setPrivateNote] = usePersistStore((state) => [
+    state.privateNote,
+    state.setPrivateNote,
+  ])
   const profile = useAppStore((state) => state.defaultProfile)
   const { colorMode } = useColorMode()
 
@@ -87,7 +94,7 @@ const PrivateNote: NextPage = () => {
     setIsLoading(false)
   }
 
-  const publish = async () => {
+  const publish = () => {
     setPublicNote({
       ...publicNote,
       name: note.title,
@@ -96,6 +103,15 @@ const PrivateNote: NextPage = () => {
       content: note.content,
     })
     router.push('/create')
+  }
+
+  const update = () => {
+    setPrivateNote({
+      ...privateNote,
+      ...note,
+      tags: note.tags.toString().split(','),
+    })
+    router.push('/create/private')
   }
 
   useEffect(() => {
@@ -121,9 +137,14 @@ const PrivateNote: NextPage = () => {
         {isAuthorized ? (
           <>
             <Center>
-              <Button colorScheme={'green'} onClick={publish}>
-                Publish to Lens
-              </Button>
+              <HStack spacing={2}>
+                <Button colorScheme={'green'} onClick={publish}>
+                  Publish
+                </Button>
+                <Button colorScheme={'blue'} onClick={update}>
+                  Update
+                </Button>
+              </HStack>
             </Center>
 
             <MdEditor

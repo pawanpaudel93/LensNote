@@ -1,4 +1,4 @@
-import { INote } from '@/interfaces'
+import { INote } from '@/types'
 import {
   Stack,
   Text,

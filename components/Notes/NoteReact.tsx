@@ -1,5 +1,5 @@
 import { usePost } from '@/hooks/usePost'
-import { INote, IProfile } from '@/interfaces'
+import { INote, IProfile } from '@/types'
 import { getRPCErrorMessage } from '@/lib/parser'
 import { getDefaultToastOptions } from '@/lib/utils'
 import { IconButton, Tooltip, useToast } from '@chakra-ui/react'

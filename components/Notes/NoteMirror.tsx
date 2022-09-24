@@ -1,5 +1,5 @@
 import { usePost } from '@/hooks/usePost'
-import { IProfile } from '@/interfaces'
+import { IProfile } from '@/types'
 import { getRPCErrorMessage } from '@/lib/parser'
 import { getDefaultToastOptions } from '@/lib/utils'
 import {

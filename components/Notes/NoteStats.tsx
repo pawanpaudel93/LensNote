@@ -1,4 +1,4 @@
-import { ApprovedAllowanceAmount, INote, IProfile } from '@/interfaces'
+import { ApprovedAllowanceAmount, INote, IProfile } from '@/types'
 import {
   Box,
   Flex,

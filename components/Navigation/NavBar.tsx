@@ -33,7 +33,7 @@ import jwtDecode from 'jwt-decode'
 import { useEffect } from 'react'
 import SearchBar from './SearchBar'
 import useAppStore from '@/lib/store'
-import { IProfile } from '@/interfaces'
+import { IProfile } from '@/types'
 
 interface NavLinkProps extends LinkProps {
   children?: string | React.ReactNode

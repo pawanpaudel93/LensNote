@@ -5,7 +5,7 @@ import { connect, Connection, resultsToObjects } from '@tableland/sdk'
 import 'md-editor-rt/lib/style.css'
 import { useEffect, useState } from 'react'
 import useAppStore from '@/lib/store'
-import { IPrivateMetadata } from '@/interfaces'
+import { IPrivateMetadata } from '@/types'
 import PrivateNoteInfo from '@/components/Notes/PrivateNoteInfo'
 
 let tableland: Connection

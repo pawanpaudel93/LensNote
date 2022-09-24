@@ -4,7 +4,7 @@ import {
   PublicationMainFocus,
   PublicationMetadataDisplayType,
   PublicationMetadataVersions,
-} from '@/interfaces'
+} from '@/types'
 import create from 'zustand'
 import { v4 as uuidv4 } from 'uuid'
 import { persist } from 'zustand/middleware'

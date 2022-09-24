@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { useProfile } from '@/hooks/useProfile'
-import { IProfile } from '@/interfaces'
+import { IProfile } from '@/types'
 import { getDefaultToastOptions } from '@/lib/utils'
 import { getRPCErrorMessage } from '@/lib/parser'
 

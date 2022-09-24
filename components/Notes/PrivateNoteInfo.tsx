@@ -1,4 +1,4 @@
-import { IPrivateMetadata, IProfile } from '@/interfaces'
+import { IPrivateMetadata, IProfile } from '@/types'
 import {
   Avatar,
   HStack,

@@ -1,4 +1,4 @@
-import { NoteStats } from '@/interfaces'
+import { NoteStats } from '@/types'
 import { Box, HStack, Tooltip } from '@chakra-ui/react'
 import { ReactNode } from 'react'
 import { BsArrowLeftRight, BsCollection, BsHeart } from 'react-icons/bs'

@@ -1,5 +1,5 @@
 import { SEARCH_PROFILE_QUERY } from '@/graphql/queries'
-import { IProfile } from '@/interfaces'
+import { IProfile } from '@/types'
 import { SearchIcon } from '@chakra-ui/icons'
 import {
   InputGroup,

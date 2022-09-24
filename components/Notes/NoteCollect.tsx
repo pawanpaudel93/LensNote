@@ -7,7 +7,7 @@ import {
   CollectModules,
   FreeCollectModuleParams,
   CommonFeeCollectModuleParams,
-} from '@/interfaces'
+} from '@/types'
 import { getRPCErrorMessage } from '@/lib/parser'
 import { getDefaultToastOptions } from '@/lib/utils'
 import { IconButton, Tooltip, useToast } from '@chakra-ui/react'

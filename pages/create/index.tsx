@@ -23,7 +23,7 @@ import {
 import { usePost } from '@/hooks/usePost'
 import { useAccount } from 'wagmi'
 import { WMATIC_TOKEN_ADDRESS } from '@/constants'
-import { CollectModules, CommonFeeCollectModuleParams } from '@/interfaces'
+import { CollectModules, CommonFeeCollectModuleParams } from '@/types'
 import 'md-editor-rt/lib/style.css'
 import useAppStore from '@/lib/store'
 import { getErrorMessage, getRPCErrorMessage } from '@/lib/parser'

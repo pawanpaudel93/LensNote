@@ -10,7 +10,7 @@ import {
   useColorMode,
   VStack,
 } from '@chakra-ui/react'
-import { INote, PaginatedResultInfo } from '@/interfaces'
+import { INote, PaginatedResultInfo } from '@/types'
 import NoteInfo from '@/components/Notes/NoteInfo'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useEffect, useState } from 'react'
