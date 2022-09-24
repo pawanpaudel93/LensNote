@@ -116,6 +116,7 @@ const Profile: NextPage = () => {
       initialFetch()
       setIsFollowing(profile?.isFollowedByMe === true ? true : false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile?.id])
 
   return fetching && notes.length === 0 ? (

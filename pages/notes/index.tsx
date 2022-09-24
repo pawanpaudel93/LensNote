@@ -56,6 +56,7 @@ const Notes: NextPage = () => {
     if (profile?.id && notes.length === 0) {
       initialFetch()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile?.id])
 
   return fetching && notes.length === 0 ? (

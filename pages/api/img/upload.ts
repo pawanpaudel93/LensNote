@@ -18,7 +18,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const client = new Web3Storage({ token: process.env.WEB3STORAGE_TOKEN })
+  const client = new Web3Storage({
+    token: process.env.WEB3STORAGE_TOKEN as string,
+  })
   if (req.method === 'POST') {
     // parse form with a Promise wrapper
     try {
@@ -34,7 +36,9 @@ export default async function handler(
           })
         })
 
-      const files = await getFilesFromPath(data?.files?.file?.filepath)
+      const files = await getFilesFromPath(
+        (data?.files?.file as { filepath: string })?.filepath
+      )
       const cid = await client.put(files, {
         wrapWithDirectory: false,
         maxRetries: 3,

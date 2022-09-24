@@ -2,14 +2,7 @@ import type { NextPage } from 'next'
 import { APP_NAME } from '@/constants'
 import { GET_EXPLORE_PUBLICATIONS_QUERY } from '@/graphql/queries'
 import { useClient } from 'urql'
-import {
-  Box,
-  Center,
-  Container,
-  SkeletonText,
-  useColorMode,
-  VStack,
-} from '@chakra-ui/react'
+import { Box, Center, Container, SkeletonText, VStack } from '@chakra-ui/react'
 import { INote, PaginatedResultInfo } from '@/types'
 import NoteInfo from '@/components/Notes/NoteInfo'
 import InfiniteScroll from 'react-infinite-scroll-component'
@@ -17,7 +10,6 @@ import { useEffect, useState } from 'react'
 
 const Home: NextPage = () => {
   const client = useClient()
-  const { colorMode } = useColorMode()
   const [notes, setNotes] = useState<INote[]>([])
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
   const [fetching, setFetching] = useState(true)
@@ -60,6 +52,7 @@ const Home: NextPage = () => {
     if (notes.length === 0) {
       initialFetch()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return fetching && notes.length === 0 ? (

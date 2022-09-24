@@ -22,6 +22,7 @@ import { Chakra } from '@/components/Chakra'
 
 interface Props {
   children: ReactNode
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   pageProps: any
 }
 

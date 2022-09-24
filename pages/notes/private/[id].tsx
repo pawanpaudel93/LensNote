@@ -86,6 +86,7 @@ const PrivateNote: NextPage = () => {
         )
         setNote((prev) => ({ ...prev, content: decryptedString as string }))
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (error.errorCode === 'not_authorized') {
         setIsAuthorized(false)

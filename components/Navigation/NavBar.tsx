@@ -284,7 +284,7 @@ const DesktopNav = ({
 
 const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   return (
-    <NextLink href={href} passHref>
+    <NextLink href={href as string} passHref>
       <Link
         href={href}
         role={'group'}
@@ -393,7 +393,7 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
         >
           {children &&
             children.map((child, index) => (
-              <NextLink key={index} href={child.href} passHref>
+              <NextLink key={index} href={child.href as string} passHref>
                 <Link py={2}>{child.label}</Link>
               </NextLink>
             ))}

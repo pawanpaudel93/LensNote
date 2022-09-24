@@ -24,7 +24,8 @@ export function Chakra({
   )
 }
 
-export function getServerSideProps({ req }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getServerSideProps({ req }: { req: any }) {
   return {
     props: {
       cookies: req.headers.cookie ?? '',

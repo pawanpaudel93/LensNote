@@ -47,7 +47,6 @@ const CreateNote: NextPage = () => {
   const toast = useToast()
   const { address } = useAccount()
   const [isLoading, setIsLoading] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
   const profile = useAppStore((store) => store.defaultProfile)
   const [collectModule, setCollectModule] = useState('FreeCollectModule')
   const toolbarsExclude: ToolbarNames[] = ['github']
@@ -174,7 +173,6 @@ const CreateNote: NextPage = () => {
   ) => {
     if (files.length > 0) {
       try {
-        setIsUploading(true)
         const res = await Promise.all(
           files.map((file) => {
             return new Promise((rev, rej) => {
@@ -198,7 +196,6 @@ const CreateNote: NextPage = () => {
           ...getDefaultToastOptions('error'),
         })
       }
-      setIsUploading(false)
     }
   }
 

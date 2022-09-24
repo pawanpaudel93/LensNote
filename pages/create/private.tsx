@@ -35,7 +35,6 @@ const CreatePrivateNote: NextPage = () => {
   const { colorMode } = useColorMode()
   const mounted = useIsMounted()
   const [isLoading, setIsLoading] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
   const toast = useToast()
   const profile = useAppStore((store) => store.defaultProfile) as IProfile
   const [showShareModal, setShowShareModal] = useState(false)
@@ -199,7 +198,6 @@ const CreatePrivateNote: NextPage = () => {
     callback: (urls: Array<string>) => void
   ) => {
     try {
-      setIsUploading(true)
       const res = await Promise.all(
         files.map((file) => {
           return new Promise((rev, rej) => {
@@ -223,7 +221,6 @@ const CreatePrivateNote: NextPage = () => {
         ...getDefaultToastOptions('error'),
       })
     }
-    setIsUploading(false)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

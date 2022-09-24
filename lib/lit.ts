@@ -32,6 +32,7 @@ function hexdump(buf: ArrayBuffer) {
 }
 
 class Lit {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private litNodeClient: any
 
   async connect() {
