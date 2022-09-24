@@ -23,7 +23,7 @@ import {
   MoonIcon,
   SunIcon,
 } from '@chakra-ui/icons'
-import Logo from '@/components/Logo'
+import Logo from '@/assets/logo.svg'
 import { useLogin } from '@/hooks/useLogin'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import NextLink, { LinkProps } from 'next/link'
@@ -146,9 +146,6 @@ export default function NavBar() {
           <NextLink href="/" passHref>
             <Box cursor="pointer" mr={4}>
               <Logo />
-              <Text style={{ display: 'inline' }} color="green">
-                Note
-              </Text>
             </Box>
           </NextLink>
 

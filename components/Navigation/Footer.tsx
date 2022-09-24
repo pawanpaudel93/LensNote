@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react'
 import { FaGithub, FaTwitter, FaYoutube } from 'react-icons/fa'
 import { ReactNode } from 'react'
-import Logo from '@/components/Logo'
+import Logo from '@/assets/logo.svg'
 import NextLink from 'next/link'
 
 const SocialButton = ({
@@ -62,10 +62,7 @@ export function Footer() {
       >
         <NextLink href="/" passHref>
           <Box cursor="pointer">
-            <Logo />
-            <Text style={{ display: 'inline' }} color="green">
-              Note
-            </Text>
+            <Logo width="64" height="36" />
           </Box>
         </NextLink>
         <Text>© 2022 LensNote. All rights reserved</Text>
