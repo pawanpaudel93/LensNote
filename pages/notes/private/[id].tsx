@@ -8,6 +8,8 @@ import {
   AlertIcon,
   AlertTitle,
   Box,
+  Button,
+  Center,
   Container,
   SkeletonText,
   useColorMode,
@@ -19,11 +21,15 @@ import { TABLELAND_NOTE_TABLE } from '@/constants'
 import { Connection, connect, resultsToObjects } from '@tableland/sdk'
 import lit from '@/lib/lit'
 import useAppStore from '@/lib/store'
+import usePersistStore from '@/lib/store/persist'
 
 let tableland: Connection
 const PrivateNote: NextPage = () => {
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
   const [isAuthorized, setIsAuthorized] = useState(true)
+  const setPublicNote = usePersistStore((state) => state.setPublicNote)
+  const publicNote = usePersistStore((state) => state.publicNote)
   const profile = useAppStore((state) => state.defaultProfile)
   const { colorMode } = useColorMode()
 
@@ -81,6 +87,17 @@ const PrivateNote: NextPage = () => {
     setIsLoading(false)
   }
 
+  const publish = async () => {
+    setPublicNote({
+      ...publicNote,
+      name: note.title,
+      description: note.description,
+      tags: note.tags.toString().split(','),
+      content: note.content,
+    })
+    router.push('/create')
+  }
+
   useEffect(() => {
     if (id) {
       getPrivateNote()
@@ -102,17 +119,25 @@ const PrivateNote: NextPage = () => {
       />
       <Box p="4" boxShadow="lg" m="4" borderRadius="sm">
         {isAuthorized ? (
-          <MdEditor
-            modelValue={note?.content as string}
-            language="en-US"
-            theme={colorMode}
-            style={{
-              padding: '25px',
-            }}
-            previewOnly
-            previewTheme="github"
-            codeTheme="github"
-          />
+          <>
+            <Center>
+              <Button colorScheme={'green'} onClick={publish}>
+                Publish to Lens
+              </Button>
+            </Center>
+
+            <MdEditor
+              modelValue={note?.content as string}
+              language="en-US"
+              theme={colorMode}
+              style={{
+                padding: '25px',
+              }}
+              previewOnly
+              previewTheme="github"
+              codeTheme="github"
+            />
+          </>
         ) : (
           <Alert
             status="error"

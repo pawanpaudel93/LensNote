@@ -29,6 +29,7 @@ export const usePersistStore = create(
         contentId: '',
         encryptedSymmetricKey: '',
         accessControlConditions: {},
+        isPublished: 0,
         createdAt: new Date().getTime(),
         updatedAt: new Date().getTime(),
       },

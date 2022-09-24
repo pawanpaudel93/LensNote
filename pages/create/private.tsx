@@ -23,17 +23,19 @@ import lit from '@/lib/lit'
 import { TABLELAND_NOTE_TABLE } from '@/constants'
 import useAppStore from '@/lib/store'
 import { IProfile } from '@/interfaces'
-import { getRPCErrorMessage } from '@/lib/parser'
+import { getErrorMessage, getRPCErrorMessage } from '@/lib/parser'
 import { getDefaultToastOptions } from '@/lib/utils'
 import { SettingsIcon } from '@chakra-ui/icons'
 import usePersistStore from '@/lib/store/persist'
 import { useIsMounted } from '@/hooks/useIsMounted'
+import saveAs from 'file-saver'
 
 let tableland: Connection
 const CreatePrivateNote: NextPage = () => {
   const { colorMode } = useColorMode()
   const mounted = useIsMounted()
   const [isLoading, setIsLoading] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   const toast = useToast()
   const profile = useAppStore((store) => store.defaultProfile) as IProfile
   const [showShareModal, setShowShareModal] = useState(false)
@@ -144,6 +146,55 @@ const CreatePrivateNote: NextPage = () => {
     }
   }
 
+  const onSave = (content: string) => {
+    if (content) {
+      const blob = new Blob([content], {
+        type: 'text/plain;charset=utf-8',
+      })
+
+      saveAs(
+        blob,
+        `${metadata?.title ? metadata?.title.split(' ').join('-') : 'note'}.md`
+      )
+    }
+  }
+
+  const onUploadImg = async (
+    files: Array<File>,
+    callback: (urls: Array<string>) => void
+  ) => {
+    try {
+      setIsUploading(true)
+      toast({
+        title: 'Uploading Image/s',
+        ...getDefaultToastOptions('loading'),
+      })
+      const res = await Promise.all(
+        files.map((file) => {
+          return new Promise((rev, rej) => {
+            const form = new FormData()
+            form.append('file', file)
+
+            fetch('/api/img/upload', {
+              method: 'POST',
+              body: form,
+            })
+              .then(async (res) => rev(await res.json()))
+              .catch((error) => rej(error))
+          })
+        })
+      )
+      callback(res.map((item) => (item as { imageUrl: string }).imageUrl))
+    } catch (error) {
+      toast({
+        title: 'Image Upload Error',
+        description: getErrorMessage(error),
+        ...getDefaultToastOptions('error'),
+      })
+    }
+    setIsUploading(false)
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onUnifiedAccessControlConditionsSelected = (shareModalOutput: any) => {
     // setShowShareModal(false)
@@ -223,6 +274,8 @@ const CreatePrivateNote: NextPage = () => {
               language="en-US"
               modelValue={metadata.content as string}
               toolbarsExclude={toolbarsExclude}
+              onSave={onSave}
+              onUploadImg={onUploadImg}
               style={{
                 padding: '25px',
               }}

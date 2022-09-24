@@ -19,7 +19,6 @@ import {
   useToast,
   useColorMode,
   Spinner,
-  useColorModeValue,
 } from '@chakra-ui/react'
 import { usePost } from '@/hooks/usePost'
 import { useAccount } from 'wagmi'
@@ -27,10 +26,11 @@ import { WMATIC_TOKEN_ADDRESS } from '@/constants'
 import { CollectModules, CommonFeeCollectModuleParams } from '@/interfaces'
 import 'md-editor-rt/lib/style.css'
 import useAppStore from '@/lib/store'
-import { getRPCErrorMessage } from '@/lib/parser'
+import { getErrorMessage, getRPCErrorMessage } from '@/lib/parser'
 import { getDefaultToastOptions } from '@/lib/utils'
 import usePersistStore from '@/lib/store/persist'
 import { useIsMounted } from '@/hooks/useIsMounted'
+import { saveAs } from 'file-saver'
 
 const collectModuleTypes = {
   FreeCollectModule: 'Free Collect',
@@ -47,6 +47,7 @@ const CreateNote: NextPage = () => {
   const toast = useToast()
   const { address } = useAccount()
   const [isLoading, setIsLoading] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   const profile = useAppStore((store) => store.defaultProfile)
   const [collectModule, setCollectModule] = useState('FreeCollectModule')
   const toolbarsExclude: ToolbarNames[] = ['github']
@@ -151,6 +152,53 @@ const CreateNote: NextPage = () => {
       })
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const onSave = (content: string) => {
+    if (content) {
+      const blob = new Blob([content], {
+        type: 'text/plain;charset=utf-8',
+      })
+
+      saveAs(
+        blob,
+        `${metadata?.name ? metadata?.name.split(' ').join('-') : 'note'}.md`
+      )
+    }
+  }
+
+  const onUploadImg = async (
+    files: Array<File>,
+    callback: (urls: Array<string>) => void
+  ) => {
+    if (files.length > 0) {
+      try {
+        setIsUploading(true)
+        const res = await Promise.all(
+          files.map((file) => {
+            return new Promise((rev, rej) => {
+              const form = new FormData()
+              form.append('file', file)
+
+              fetch('/api/img/upload', {
+                method: 'POST',
+                body: form,
+              })
+                .then(async (res) => rev(await res.json()))
+                .catch((error) => rej(error))
+            })
+          })
+        )
+        callback(res.map((item) => (item as { imageUrl: string }).imageUrl))
+      } catch (error) {
+        toast({
+          title: 'Image Upload Error',
+          description: getErrorMessage(error),
+          ...getDefaultToastOptions('error'),
+        })
+      }
+      setIsUploading(false)
     }
   }
 
@@ -389,6 +437,8 @@ const CreateNote: NextPage = () => {
               onChange={(v: string) => {
                 setMetadata({ ...metadata, content: v })
               }}
+              onSave={onSave}
+              onUploadImg={onUploadImg}
               style={{
                 padding: '25px',
               }}
