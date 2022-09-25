@@ -7,6 +7,7 @@ import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import jwtDecode, { JwtPayload } from 'jwt-decode'
 import NextNProgress from 'nextjs-progressbar'
 import Header from '@/components/Navigation/NavBar'
+import NextHead from 'next/head'
 import {
   dedupExchange,
   cacheExchange,
@@ -19,11 +20,14 @@ import { refreshMutation } from '@/graphql/mutations'
 import { JWT_KEY } from '@/constants'
 import { Footer } from '@/components/Navigation/Footer'
 import { Chakra } from '@/components/Chakra'
+import { NextComponentType, NextPageContext } from 'next'
 
 interface Props {
   children: ReactNode
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   pageProps: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Component: NextComponentType<NextPageContext, any, any>
 }
 
 const { chains, provider } = configureChains(
@@ -63,10 +67,14 @@ export interface AuthState {
   expiry?: number
 }
 
-const Layout: FC<Props> = ({ children, pageProps }) => {
+const Layout: FC<Props> = ({ children, pageProps, Component }) => {
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains}>
+        <NextHead>
+          <title>{`LensNote - ${Component.displayName}`}</title>
+          <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+        </NextHead>
         <Chakra cookies={pageProps.cookies}>
           <Header />
           <NextNProgress />

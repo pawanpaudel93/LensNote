@@ -70,3 +70,5 @@ export default function CreateProfile() {
     </Container>
   )
 }
+
+CreateProfile.displayName = 'Create Profile'

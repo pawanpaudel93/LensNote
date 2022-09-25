@@ -25,3 +25,5 @@ export default function MyProfiles() {
     </Container>
   )
 }
+
+MyProfiles.displayName = 'My Profiles'

@@ -60,5 +60,5 @@ const PrivateNotes: NextPage = () => {
     </Container>
   )
 }
-
+PrivateNotes.displayName = 'Private Notes'
 export default PrivateNotes

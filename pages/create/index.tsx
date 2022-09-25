@@ -489,5 +489,5 @@ const CreateNote: NextPage = () => {
     </Container>
   )
 }
-
+CreateNote.displayName = 'Create Note'
 export default CreateNote

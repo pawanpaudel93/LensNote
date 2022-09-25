@@ -304,5 +304,5 @@ const Profile: NextPage = () => {
     </Container>
   )
 }
-
+Profile.displayName = 'Profile'
 export default Profile

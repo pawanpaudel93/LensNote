@@ -372,4 +372,5 @@ const CreatePrivateNote: NextPage = () => {
   )
 }
 
+CreatePrivateNote.displayName = 'Create Note'
 export default CreatePrivateNote

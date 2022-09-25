@@ -183,4 +183,5 @@ const PrivateNote: NextPage = () => {
     </Container>
   )
 }
+PrivateNote.displayName = 'Private Note'
 export default PrivateNote

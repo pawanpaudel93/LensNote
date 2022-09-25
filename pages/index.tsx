@@ -2,23 +2,40 @@ import type { NextPage } from 'next'
 import { APP_NAME } from '@/constants'
 import { GET_EXPLORE_PUBLICATIONS_QUERY } from '@/graphql/queries'
 import { useClient } from 'urql'
-import { Box, Center, Container, SkeletonText, VStack } from '@chakra-ui/react'
+import {
+  Box,
+  Center,
+  Container,
+  Flex,
+  Select,
+  SkeletonText,
+  Spacer,
+  VStack,
+  Text,
+} from '@chakra-ui/react'
 import { INote, PaginatedResultInfo } from '@/types'
 import NoteInfo from '@/components/Notes/NoteInfo'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useEffect, useState } from 'react'
+
+const SORT_CRITERIA = {
+  LATEST: 'Latest',
+  TOP_COLLECTED: 'Top Collected',
+  TOP_MIRRORED: 'Top Mirrored',
+}
 
 const Home: NextPage = () => {
   const client = useClient()
   const [notes, setNotes] = useState<INote[]>([])
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
   const [fetching, setFetching] = useState(true)
+  const [sortCriteria, setSortCriteria] = useState('LATEST')
 
   const initialFetch = async () => {
     const result = await client
       .query(GET_EXPLORE_PUBLICATIONS_QUERY, {
         request: {
-          sortCriteria: 'LATEST',
+          sortCriteria: sortCriteria,
           noRandomize: true,
           publicationTypes: ['POST', 'COMMENT', 'MIRROR'],
           limit: 10,
@@ -35,7 +52,7 @@ const Home: NextPage = () => {
     const result = await client
       .query(GET_EXPLORE_PUBLICATIONS_QUERY, {
         request: {
-          sortCriteria: 'LATEST',
+          sortCriteria: sortCriteria,
           noRandomize: true,
           publicationTypes: ['POST', 'COMMENT', 'MIRROR'],
           limit: 10,
@@ -49,11 +66,10 @@ const Home: NextPage = () => {
   }
 
   useEffect(() => {
-    if (notes.length === 0) {
-      initialFetch()
-    }
+    initialFetch()
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [sortCriteria])
 
   return fetching && notes.length === 0 ? (
     <Container maxW="full" px={12}>
@@ -67,6 +83,24 @@ const Home: NextPage = () => {
     </Container>
   ) : (
     <Container maxW="full" px={12}>
+      <Flex alignItems="center">
+        <Spacer />
+        <Text color="green" mr={2}>
+          Sort Criteria:
+        </Text>
+        <Select
+          maxW="xs"
+          value={sortCriteria}
+          onChange={(e) => setSortCriteria(e.target.value)}
+        >
+          {Object.entries(SORT_CRITERIA).map(([key, value]) => (
+            <option value={key} key={key}>
+              {value}
+            </option>
+          ))}
+        </Select>
+      </Flex>
+
       <InfiniteScroll
         dataLength={notes.length}
         next={fetchMore}
@@ -92,4 +126,5 @@ const Home: NextPage = () => {
   )
 }
 
+Home.displayName = 'Home'
 export default Home

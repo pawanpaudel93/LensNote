@@ -87,4 +87,5 @@ const Note: NextPage = () => {
     </Container>
   )
 }
+Note.displayName = 'Note'
 export default Note

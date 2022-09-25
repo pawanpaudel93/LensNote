@@ -95,5 +95,5 @@ const Notes: NextPage = () => {
     </Container>
   )
 }
-
+Notes.displayName = 'Notes'
 export default Notes

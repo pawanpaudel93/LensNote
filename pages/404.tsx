@@ -30,3 +30,4 @@ export default function NotFound() {
     </Box>
   )
 }
+NotFound.displayName = '404'
