@@ -38,6 +38,10 @@ const NoteCollect = ({
   const client = useClient()
   const { data: signer } = useSigner()
   const { collectPost } = usePost()
+  const [collectStat, setCollectStat] = useState({
+    collectPrice: '0',
+    collectLabel: note?.hasCollectedByMe ? 'Collect Again' : 'Collect',
+  })
 
   useEffect(() => {
     if (note?.id) {
@@ -55,6 +59,13 @@ const NoteCollect = ({
       } else {
         const collectModule =
           note?.collectModule as unknown as CommonFeeCollectModuleParams
+        const collectPrice = collectModule?.amount?.value ?? '0'
+        setCollectStat({
+          collectPrice,
+          collectLabel: note?.hasCollectedByMe
+            ? `Collect Again for ${collectPrice} wMATIC`
+            : `Collect for ${collectPrice} wMATIC`,
+        })
         if (collectModule.followerOnly && !isFollower) {
           setIsCollectable(false)
         }
@@ -161,7 +172,7 @@ const NoteCollect = ({
   return (
     <Tooltip
       hasArrow
-      label={note?.hasCollectedByMe ? 'Collect Again' : 'Collect'}
+      label={collectStat.collectLabel}
       placement="top"
       shouldWrapChildren
       mt="3"
