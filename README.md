@@ -8,7 +8,7 @@
 
 ---
 
-<p align="center"> LensNote is a decentralized social network to create persoanal and public notes creation and sharing using Lens Protocol on Polygon's eco-friendly blockchain .
+<p align="center"> LensNote is a decentralized social network to create personal and public notes creation and sharing using Lens Protocol on Polygon's eco-friendly blockchain .
     <br> 
 </p>
 
