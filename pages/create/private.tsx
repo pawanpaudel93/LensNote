@@ -117,6 +117,7 @@ const CreatePrivateNote: NextPage = () => {
           )
           console.log(updateRes)
         } else {
+          const createdAt = new Date().getTime()
           const writeRes = await tableland.write(
             `insert into ${TABLELAND_NOTE_TABLE} (id, title, description, content, contentId, tags, lensId, encryptedSymmetricKey, accessControlConditions, isPublished, createdAt, updatedAt) values (
             '${uuidv4()}',
@@ -126,7 +127,7 @@ const CreatePrivateNote: NextPage = () => {
               profile?.id
             }, '${encryptedSymmetricKey}', '${JSON.stringify(
               metadata.accessControlConditions
-            )}', 0, ${metadata.createdAt}, ${metadata.updatedAt}
+            )}', 0, ${createdAt}}, ${createdAt}
           )`
           )
           console.log(writeRes)
@@ -146,6 +147,7 @@ const CreatePrivateNote: NextPage = () => {
           )
           console.log(updateRes)
         } else {
+          const createdAt = new Date().getTime()
           const writeRes = await tableland.write(
             `insert into ${TABLELAND_NOTE_TABLE} (id, title, description, content, contentId, tags, lensId, encryptedSymmetricKey, accessControlConditions, isPublished, createdAt, updatedAt) values (
             '${uuidv4()}',
@@ -155,7 +157,7 @@ const CreatePrivateNote: NextPage = () => {
               profile?.id
             }', '${encryptedSymmetricKey}', '${JSON.stringify(
               metadata.accessControlConditions
-            )}', 0, ${metadata.createdAt}, ${metadata.updatedAt}
+            )}', 0, ${createdAt}, ${createdAt}
           )`
           )
           console.log(writeRes)
