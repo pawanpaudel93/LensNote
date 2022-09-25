@@ -1022,6 +1022,7 @@ fragment PublicationStatsFields on PublicationStats {
   totalAmountOfMirrors
   totalAmountOfCollects
   totalAmountOfComments
+  totalUpvotes
 }
 
 fragment MetadataOutputFields on MetadataOutput {
