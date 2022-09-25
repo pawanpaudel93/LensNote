@@ -162,9 +162,9 @@ const CreatePrivateNote: NextPage = () => {
         }
       }
       toast({
-        title: profile?.id ? 'Note Updated' : 'Note created.',
+        title: metadata?.id ? 'Note Updated' : 'Note created.',
         description: `Note has been ${
-          profile?.id ? 'updated' : 'created'
+          metadata?.id ? 'updated' : 'created'
         } sucessfully.`,
         ...getDefaultToastOptions('success'),
       })
@@ -363,7 +363,7 @@ const CreatePrivateNote: NextPage = () => {
           </div>
           <Center>
             <Button type="submit" colorScheme="blue" isLoading={isLoading}>
-              {profile?.id ? 'Update Note' : 'Create Note'}
+              {metadata?.id ? 'Update Note' : 'Create Note'}
             </Button>
           </Center>
         </VStack>
