@@ -33,6 +33,8 @@ export default function CreateProfile() {
         },
       })
       if (profile.error) throw profile.error
+      if (profile?.data?.createProfile?.reason)
+        throw Error(profile.data.createProfile.reason)
       toast({
         title: 'Account created.',
         description: `We've created your account handle ${handle} for you.`,

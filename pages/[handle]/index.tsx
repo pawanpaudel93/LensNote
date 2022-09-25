@@ -236,7 +236,7 @@ const Profile: NextPage = () => {
                       </Text>
                     </Box>
                     <Box mr={{ lg: 4 }} p="3" textAlign="center">
-                      {signedProfile?.handle === profile?.handle && (
+                      {signedProfile?.handle !== profile?.handle && (
                         <Button
                           rounded={'full'}
                           bg={'blue.400'}

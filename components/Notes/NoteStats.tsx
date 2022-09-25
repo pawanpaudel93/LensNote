@@ -8,7 +8,7 @@ import {
   StatNumber,
   useColorModeValue,
 } from '@chakra-ui/react'
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 import { FaComment } from 'react-icons/fa'
 import NoteCollect from './NoteCollect'
 import NoteMirror from './NoteMirror'
@@ -58,6 +58,11 @@ export default function NoteStats({
   note: INote
   profile: IProfile
 }) {
+  const [stats, setStats] = useState({
+    totalAmountOfCollects: note?.stats?.totalAmountOfCollects ?? 0,
+    totalAmountOfMirrors: note?.stats?.totalAmountOfMirrors ?? 0,
+    totalUpvotes: note?.stats?.totalUpvotes ?? 0,
+  })
   return (
     <Box maxW="2xl" mx={'auto'} py={4} px={{ base: 2, sm: 12, md: 17 }}>
       <SimpleGrid
@@ -66,7 +71,7 @@ export default function NoteStats({
       >
         <StatsCard
           title={'Mirrors'}
-          stat={(note?.stats?.totalAmountOfMirrors ?? 0).toString()}
+          stat={stats.totalAmountOfMirrors.toString()}
           icon={
             <NoteMirror
               profile={profile}
@@ -76,23 +81,25 @@ export default function NoteStats({
                   note?.profile?.isFollowing) ||
                 note?.referenceModule === null
               }
+              setStats={setStats}
             />
           }
         />
         <StatsCard
           title={'Collects'}
-          stat={(note?.stats?.totalAmountOfCollects ?? 0).toString()}
+          stat={stats.totalAmountOfCollects.toString()}
           icon={
             <NoteCollect
               note={note}
               approvedModuleAllowanceAmount={approvedModuleAllowanceAmount}
+              setStats={setStats}
             />
           }
         />
         <StatsCard
           title={'Likes'}
-          stat={(note?.stats?.totalUpvotes ?? 0).toString()}
-          icon={<NoteReact note={note} profile={profile} />}
+          stat={stats.totalUpvotes.toString()}
+          icon={<NoteReact note={note} profile={profile} setStats={setStats} />}
         />
         <StatsCard
           title={'Comments'}

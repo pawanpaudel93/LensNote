@@ -12,7 +12,7 @@ import { getRPCErrorMessage } from '@/lib/parser'
 import { getDefaultToastOptions } from '@/lib/utils'
 import { IconButton, Tooltip, useToast } from '@chakra-ui/react'
 import { ethers } from 'ethers'
-import { useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { BsCollection } from 'react-icons/bs'
 import { useClient } from 'urql'
 import { usePrepareSendTransaction, useSendTransaction, useSigner } from 'wagmi'
@@ -20,9 +20,17 @@ import { usePrepareSendTransaction, useSendTransaction, useSigner } from 'wagmi'
 const NoteCollect = ({
   approvedModuleAllowanceAmount,
   note,
+  setStats,
 }: {
   approvedModuleAllowanceAmount: ApprovedAllowanceAmount[]
   note: INote
+  setStats: Dispatch<
+    SetStateAction<{
+      totalAmountOfCollects: number
+      totalAmountOfMirrors: number
+      totalUpvotes: number
+    }>
+  >
 }) => {
   const [isCollecting, setIsCollecting] = useState(false)
   const [isCollectable, setIsCollectable] = useState(true)
@@ -130,6 +138,10 @@ const NoteCollect = ({
         }
       }
       await collectPost({ publicationId: note?.id })
+      setStats((prev) => ({
+        ...prev,
+        totalAmountOfCollects: prev.totalAmountOfCollects + 1,
+      }))
       toast({
         title: 'Note collected.',
         description: 'Note has been collected sucessfully.',

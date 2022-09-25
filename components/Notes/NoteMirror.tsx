@@ -21,24 +21,34 @@ import {
   useToast,
   Text,
 } from '@chakra-ui/react'
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import { BsArrowLeftRight } from 'react-icons/bs'
 
 const NoteMirror = ({
   profile,
   publicationId,
   isMirrorable,
+  setStats,
 }: {
   profile: IProfile
   publicationId: string
   isMirrorable: boolean
+  setStats: Dispatch<
+    SetStateAction<{
+      totalAmountOfCollects: number
+      totalAmountOfMirrors: number
+      totalUpvotes: number
+    }>
+  >
 }) => {
   const toast = useToast()
   const { createMirror } = usePost()
   const [followerOnly, setFollowerOnly] = useState(false)
   const { isOpen, onToggle, onClose } = useDisclosure()
+  const [isLoading, setIsLoading] = useState(false)
 
   const mirrorNote = async () => {
+    setIsLoading(true)
     const createMirrorRequest = {
       profileId: profile?.id,
       publicationId,
@@ -48,6 +58,10 @@ const NoteMirror = ({
     }
     try {
       await createMirror(createMirrorRequest)
+      setStats((prev) => ({
+        ...prev,
+        totalAmountOfMirrors: prev.totalAmountOfMirrors + 1,
+      }))
       toast({
         title: 'Note Mirrored.',
         description: 'Note has been mirrored successfully.',
@@ -60,6 +74,7 @@ const NoteMirror = ({
         ...getDefaultToastOptions('error'),
       })
     }
+    setIsLoading(false)
   }
 
   return (
@@ -108,7 +123,11 @@ const NoteMirror = ({
               <Button variant="outline" onClick={onClose}>
                 Cancel
               </Button>
-              <Button colorScheme="red" onClick={mirrorNote}>
+              <Button
+                colorScheme="red"
+                onClick={mirrorNote}
+                isLoading={isLoading}
+              >
                 Mirror Note
               </Button>
             </ButtonGroup>

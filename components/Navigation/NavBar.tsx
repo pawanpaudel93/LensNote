@@ -84,7 +84,7 @@ const NAV_ITEMS: Array<NavItem> = [
   {
     label: 'My Profiles',
     href: '/my-profiles',
-    authentication: true,
+    authentication: false,
   },
 ]
 
@@ -234,8 +234,10 @@ const DesktopNav = ({
 
   return (
     <Stack direction={'row'} spacing={4} align="center">
-      {NAV_ITEMS.filter(
-        (navItem) => navItem.authentication && profile?.id && isConnected
+      {NAV_ITEMS.filter((navItem) =>
+        navItem.authentication
+          ? navItem.authentication && profile?.id && isConnected
+          : isConnected
       ).map((navItem) => (
         <Box key={navItem.label}>
           <Popover trigger={'hover'} placement={'bottom-start'}>
@@ -340,8 +342,10 @@ const MobileNav = ({
       top={-1}
       zIndex={1000}
     >
-      {NAV_ITEMS.filter(
-        (navItem) => navItem.authentication && profile?.id && isConnected
+      {NAV_ITEMS.filter((navItem) =>
+        navItem.authentication
+          ? navItem.authentication && profile?.id && isConnected
+          : isConnected
       ).map((navItem) => (
         <MobileNavItem key={navItem.label} {...navItem} />
       ))}
