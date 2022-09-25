@@ -1,8 +1,38 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<p align="center">
+  <a href="" rel="noopener">
+ <img width=200px height=200px src="public/logo.png" alt="LensNote"></a>
+</p>
 
-## Getting Started
+<h3 align="center">LensNote</h3> 
+<p align="center"><a href="https://lenstube.vercel.app/">Demo Link</a></p>
 
-First, run the development server:
+---
+
+<p align="center"> LensNote is a decentralized social network to create persoanal and public notes creation and sharing using Lens Protocol on Polygon's eco-friendly blockchain .
+    <br> 
+</p>
+
+## 📝 Table of Contents
+
+- [📝 Table of Contents](#-table-of-contents)
+- [🧐 About <a name = "about"></a>](#-about-)
+- [Getting Started <a name="started"></a>](#getting-started-)
+  - [Local](#local)
+- [🎈 How it's Made <a name="how"></a>](#-how-its-made-)
+- [⛏️ Built Using <a name = "built_using"></a>](#️-built-using-)
+- [Author <a name = "authors"></a>](#author-)
+- [🤝 Contributing <a name = "contributing"></a>](#-contributing-)
+
+## 🧐 About <a name = "about"></a>
+
+LensNote uses Lens Protocol on top of Polygon's eco-friendly blockchain to create a social network with other technologies like web3.storage, tableland, Quicknode, and Valist to create and share personal notes which can be reacted, collected, and mirrored. Lens Protocol makes it easy to create a social network where users can create and share personal notes with everyone and also can monetize the notes users share on the platform.
+
+## Getting Started <a name="started"></a>
+
+### Local
+
+First, install the requirements with `yarn` or `npm install` and then copy `.env.example` to `.env` and set the env variables there.
+Then, run the development server:
 
 ```bash
 npm run dev
@@ -10,25 +40,34 @@ npm run dev
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see LensNote.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## 🎈 How it's Made <a name="how"></a>
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+This project uses **Lens Protocol** to create the social network on top of **Polygon**'s eco-friendly blockchain to create and share personal notes. Users can create personal notes encrypted by **Lit Protocol** which is protected and configured to be accessible applying the different access conditions. Users can directly create a note and publish it to the lens protocol configuring conditions for collect, mirror, and comment. Personal notes encrypted by **Lit Protocol** are stored on the **IPFS & Filecoin** with **Web3.Storage** or **Tableland** based on the size of the note and the metadata for the personal note is stored on the **tableland** table. Personal notes can be updated and also published to the lens protocol whenever the user thinks it's ready to share. It uses **Quicknode** as an RPC provider. **Valist** is used to publish the static LensNote web app. LensNote uses Next.js for the frontend and node.js for creating APIs to upload metadata of notes and images to be used on the note. It uses Rainbowkit with wagmi to connect the wallet and interact with the Polygon POS blockchain easily.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## ⛏️ Built Using <a name = "built_using"></a>
 
-## Learn More
+- [Lens Protocol](https://lens.xyz) - Composable and Decentralized social graph
+- [Web3.storage](https://web3.storage/) - Decentralized Data Storage
+- [IPFS](https://ipfs.tech/) - P2P hypermedia protocol designed to preserve and grow humanity's knowledge by making the web upgradeable, resilient, and more open.
+- [Filecoin](https://filecoin.io/) - Decentralized Storage network
+- [Polygon](https://polygon.technology) - Blockchain
+- [Tableland](https://tableland.xyz) - Permissionless relational database for web3 natives
+- [Valist](https://valist.io/) - Web3-native way to Publish your Software
+- [Lit Protocol](https://litprotocol.com/) - Decentralized Cryptography for Access Control, Compute, and Encryption
+- [RainbowKit](https://www.rainbowkit.com/) - The best way to connect a wallet
+- [Nextjs](https://nextjs.org/) - Reactjs Web Development Framework
+- [Chakra UI](https://chakra-ui.com/) - A simple, modular and accessible component library.
 
-To learn more about Next.js, take a look at the following resources:
+## Author <a name = "authors"></a>
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+👤 **Pawan Paudel**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- Github: [@pawanpaudel93](https://github.com/pawanpaudel93)
 
-## Deploy on Vercel
+## 🤝 Contributing <a name = "contributing"></a>
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/pawanpaudel93/LensNote/issues).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Copyright © 2022 [Pawan Paudel](https://github.com/pawanpaudel93).<br />
